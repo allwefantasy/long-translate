@@ -1,54 +1,88 @@
 // index.ts
-// 获取应用实例
-const app = getApp<IAppOption>()
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-
 Component({
   data: {
-    motto: 'Hello World',
-    userInfo: {
-      avatarUrl: defaultAvatarUrl,
-      nickName: '',
-    },
-    hasUserInfo: false,
-    canIUseGetUserProfile: wx.canIUse('getUserProfile'),
-    canIUseNicknameComp: wx.canIUse('input.type.nickname'),
+    fileName: '',
+    translationResult: '',
   },
   methods: {
-    // 事件处理函数
-    bindViewTap() {
-      wx.navigateTo({
-        url: '../logs/logs',
-      })
-    },
-    onChooseAvatar(e: any) {
-      const { avatarUrl } = e.detail
-      const { nickName } = this.data.userInfo
-      this.setData({
-        "userInfo.avatarUrl": avatarUrl,
-        hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
-      })
-    },
-    onInputChange(e: any) {
-      const nickName = e.detail.value
-      const { avatarUrl } = this.data.userInfo
-      this.setData({
-        "userInfo.nickName": nickName,
-        hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
-      })
-    },
-    getUserProfile() {
-      // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-      wx.getUserProfile({
-        desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+    chooseFile() {
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
         success: (res) => {
-          console.log(res)
+          const file = res.tempFiles[0]
           this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
+            fileName: file.name
           })
+          // 保存文件路径以供后续使用
+          this.filePath = file.path
         }
       })
     },
-  },
+    translateFile() {
+      if (!this.filePath) {
+        wx.showToast({
+          title: '请先选择文件',
+          icon: 'none'
+        })
+        return
+      }
+      
+      wx.showLoading({
+        title: '翻译中...',
+      })
+      
+      // 这里应该调用你的翻译API
+      // 以下是模拟API调用的示例
+      setTimeout(() => {
+        wx.hideLoading()
+        this.setData({
+          translationResult: '这是翻译后的内容。This is the translated content.'
+        })
+      }, 2000)
+    },
+    downloadTranslation() {
+      if (!this.data.translationResult) {
+        wx.showToast({
+          title: '没有可下载的内容',
+          icon: 'none'
+        })
+        return
+      }
+      
+      const fs = wx.getFileSystemManager()
+      const fileName = `translation_${new Date().getTime()}.txt`
+      
+      fs.writeFile({
+        filePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
+        data: this.data.translationResult,
+        encoding: 'utf8',
+        success: () => {
+          wx.saveFile({
+            tempFilePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
+            success: (res) => {
+              wx.showToast({
+                title: '下载成功',
+                icon: 'success'
+              })
+            },
+            fail: (err) => {
+              console.error('保存文件失败', err)
+              wx.showToast({
+                title: '下载失败',
+                icon: 'none'
+              })
+            }
+          })
+        },
+        fail: (err) => {
+          console.error('写入文件失败', err)
+          wx.showToast({
+            title: '下载失败',
+            icon: 'none'
+          })
+        }
+      })
+    }
+  }
 })
