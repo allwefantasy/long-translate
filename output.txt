@@ -1,232 +1,8 @@
-为了优化布局，使其更符合现代手机的使用习惯，我们可以进行以下修改：
-
-1. 将布局改为更紧凑的垂直排列，减少不必要的空白。
-2. 将选择文件和选择语言合并到一个卡片中，以节省空间。
-3. 使用更现代的设计元素，如浮动操作按钮（FAB）来触发翻译操作。
-4. 增加一些视觉反馈和动画效果，提升用户体验。
-
-以下是对 `index.wxml` 和 `index.scss` 文件的修改建议：
-
-```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
-<<<<<<< SEARCH
-<!--index.wxml-->
-<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="card file-upload">
-      <text class="card-title">选择文件</text>
-      <button class="primary-button" bindtap="chooseFile">
-        <text class="icon">📁</text> 选择文件
-      </button>
-      <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
-    </view>
-
-    <view class="card language-select">
-      <text class="card-title">选择目标语言</text>
-      <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
-        <view class="picker">
-          当前选择：{{languages[languageIndex].name}}
-        </view>
-      </picker>
-    </view>
-    
-    <view class="card translate-button">
-      <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
-        <text class="icon">🔄</text> 开始翻译
-      </button>
-    </view>
-    
-    <view class="card translation-result" wx:if="{{translationResult}}">
-      <text class="card-title">翻译结果</text>
-      <view class="result-text">{{translationResult}}</view>
-      <button class="secondary-button" bindtap="downloadTranslation">
-        <text class="icon">⬇️</text> 下载结果
-      </button>
-    </view>
-  </view>
-</scroll-view>
-=======
-<!--index.wxml-->
-<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="card file-and-language">
-      <view class="file-section">
-        <text class="section-title">选择文件</text>
-        <button class="select-button" bindtap="chooseFile">
-          <text class="icon">📁</text>
-          <text>{{fileName || '选择文件'}}</text>
-        </button>
-      </view>
-      <view class="language-section">
-        <text class="section-title">目标语言</text>
-        <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
-          <view class="select-button">
-            <text class="icon">🌐</text>
-            <text>{{languages[languageIndex].name}}</text>
-          </view>
-        </picker>
-      </view>
-    </view>
-    
-    <view class="card translation-result" wx:if="{{translationResult}}">
-      <text class="card-title">翻译结果</text>
-      <view class="result-text">{{translationResult}}</view>
-      <button class="download-button" bindtap="downloadTranslation">
-        <text class="icon">⬇️</text> 下载结果
-      </button>
-    </view>
-  </view>
-</scroll-view>
-
-<view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
-  <text class="icon">🔄</text>
-</view>
->>>>>>> REPLACE
-```
-
-现在让我们更新 `index.scss` 文件以匹配新的布局：
+To address the issue of the file selection and target language div overflowing its parent container, we need to make some adjustments to the CSS in the index.scss file. Here are the changes we can make:
 
 ```python
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
 <<<<<<< SEARCH
-/**index.scss**/
-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-}
-
-.scrollarea {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.container {
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-  }
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  display: block;
-  color: #333;
-}
-
-.primary-button, .secondary-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-  transition: all 0.3s ease;
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.primary-button {
-  background-color: #4CAF50;
-  color: white;
-
-  &:hover {
-    background-color: #45a049;
-  }
-
-  &:disabled {
-    background-color: #a5d6a7;
-    color: #fff;
-  }
-}
-
-.secondary-button {
-  background-color: #2196F3;
-  color: white;
-
-  &:hover {
-    background-color: #1e88e5;
-  }
-}
-
-.icon {
-  margin-right: 10px;
-  font-size: 18px;
-}
-
-.file-name {
-  font-size: 14px;
-  color: #666;
-  margin-top: 12px;
-  display: block;
-}
-
-.result-text {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  font-size: 15px;
-  line-height: 1.6;
-  color: #333;
-}
-
-.language-select {
-  .picker {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 16px;
-    color: #333;
-    transition: all 0.3s ease;
-
-    &:active {
-      background-color: #e0e0e0;
-    }
-  }
-}
-=======
-/**index.scss**/
-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-}
-
-.scrollarea {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.container {
-  padding: 16px;
-  box-sizing: border-box;
-}
-
 .card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -240,106 +16,36 @@ page {
   flex-direction: column;
   gap: 16px;
 }
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.select-button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
-  font-size: 14px;
-  color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  transition: all 0.3s ease;
-
-  &:active {
-    background-color: #e0e0e0;
-  }
-}
-
-.icon {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-.card-title {
-  font-size: 18px;
-  font-weight: bold;
+=======
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
   margin-bottom: 16px;
-  display: block;
-  color: #333;
-}
-
-.result-text {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
-}
-
-.download-button {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-sizing: border-box;
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background-color: #2196F3;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-
-  &:active {
-    background-color: #1e88e5;
-    transform: scale(0.98);
-  }
 }
 
-.fab {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  color: white;
+.file-and-language {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  &:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
+.file-section,
+.language-section {
+  width: 100%;
 }
 >>>>>>> REPLACE
 ```
 
-这些更改将会：
+These changes will:
 
-1. 将文件选择和语言选择合并到一个卡片中，使布局更紧凑。
-2. 使用更现代的设计元素，如浮动操作按钮（FAB）来触发翻译操作。
-3. 优化按钮和输入区域的样式，使其更符合移动端的使用习惯。
-4. 减少不必要的空白，使整体布局更加紧凑。
-5. 增加一些微妙的动画效果，提升用户体验。
+1. Add `box-sizing: border-box;` to the `.card` class to ensure padding is included in the element's total width.
+2. Add `width: 100%;` to the `.card` class to make sure it takes up the full width of its container.
+3. Add new rules for `.file-section` and `.language-section` to ensure they also take up the full width of their parent.
 
-这些修改应该能够显著改善应用的外观和用户体验，使其更符合现代移动应用的设计标准。如果您需要进一步的调整或有任何其他需求，请随时告诉我。
+These modifications should prevent the content from overflowing the parent div. The file selection and target language sections will now be properly contained within the card, and the card itself will fit within its parent container.
+
+Would you like me to explain or break down this code change?
