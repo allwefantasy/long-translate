@@ -22,12 +22,19 @@ page {
   padding: 20px;
   margin-bottom: 16px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .file-and-language {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.file-section,
+.language-section {
+  width: 100%;
 }
 
 .section-title {
