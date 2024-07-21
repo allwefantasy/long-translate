@@ -3,7 +3,7 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
 }
 
 .scrollarea {
@@ -13,75 +13,105 @@ page {
 
 .container {
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .card {
   background-color: #ffffff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
 }
 
 .card-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   display: block;
+  color: #333;
 }
 
 .primary-button, .secondary-button {
   width: 100%;
-  padding: 12px;
-  border-radius: 6px;
+  padding: 14px;
+  border-radius: 8px;
   border: none;
   font-size: 16px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .primary-button {
   background-color: #4CAF50;
   color: white;
+
+  &:hover {
+    background-color: #45a049;
+  }
+
+  &:disabled {
+    background-color: #a5d6a7;
+    color: #fff;
+  }
 }
 
 .secondary-button {
   background-color: #2196F3;
   color: white;
-}
 
-.primary-button:disabled {
-  background-color: #a5d6a7;
-  color: #white;
+  &:hover {
+    background-color: #1e88e5;
+  }
 }
 
 .icon {
-  margin-right: 8px;
+  margin-right: 10px;
+  font-size: 18px;
 }
 
 .file-name {
   font-size: 14px;
   color: #666;
-  margin-top: 10px;
+  margin-top: 12px;
   display: block;
 }
 
 .result-text {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  line-height: 1.4;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
 }
 
 .language-select {
   .picker {
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 12px;
     font-size: 16px;
+    color: #333;
+    transition: all 0.3s ease;
+
+    &:active {
+      background-color: #e0e0e0;
+    }
   }
 }
