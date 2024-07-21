@@ -1,51 +1,50 @@
-To address the issue of the file selection and target language div overflowing its parent container, we need to make some adjustments to the CSS in the index.scss file. Here are the changes we can make:
+好的,我理解您想要减小目标语言选择框的边框宽度。我们可以通过修改 CSS 样式来实现这一点。让我们来更新相关的样式文件。
 
-```python
+我们需要修改 `/Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss` 文件中的 `.select-button` 样式。
+
+以下是修改后的 *SEARCH/REPLACE block*:
+
+```scss
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
 <<<<<<< SEARCH
-.card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.file-and-language {
+.select-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #333;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+
+  &:active {
+    background-color: #e0e0e0;
+  }
 }
 =======
-.card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  box-sizing: border-box;
+.select-button {
   width: 100%;
-}
-
-.file-and-language {
+  padding: 12px;
+  border-radius: 8px;
+  border: 0.5px solid #e0e0e0; // 减小边框宽度
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #333;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  align-items: center;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
 
-.file-section,
-.language-section {
-  width: 100%;
+  &:active {
+    background-color: #e0e0e0;
+  }
 }
 >>>>>>> REPLACE
 ```
 
-These changes will:
+这个修改将边框宽度从 1px 减小到 0.5px，使得目标语言选择框的边框看起来更细一些。
 
-1. Add `box-sizing: border-box;` to the `.card` class to ensure padding is included in the element's total width.
-2. Add `width: 100%;` to the `.card` class to make sure it takes up the full width of its container.
-3. Add new rules for `.file-section` and `.language-section` to ensure they also take up the full width of their parent.
-
-These modifications should prevent the content from overflowing the parent div. The file selection and target language sections will now be properly contained within the card, and the card itself will fit within its parent container.
-
-Would you like me to explain or break down this code change?
+您是否还需要对其他元素进行类似的调整？或者您对这个修改还有其他要求吗？
