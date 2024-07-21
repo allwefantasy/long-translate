@@ -1,18 +1,14 @@
-好的，我理解您想要添加一个翻译目标语言的选择框，包括世界主流语言。我们需要修改 index.wxml 和 index.ts 文件来实现这个功能。让我们开始吧：
+好的，我理解您想优化首页的布局。我会对 `/Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml` 和 `/Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss` 文件进行修改，以改善布局和视觉效果。以下是优化后的代码：
 
-首先，我们在 index.wxml 文件中添加语言选择下拉框：
+首先，让我们修改 index.wxml 文件：
 
-```python
+```xml
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
 <<<<<<< SEARCH
-<view class="card file-upload">
-  <text class="card-title">选择文件</text>
-  <button class="primary-button" bindtap="chooseFile">
-    <text class="icon">📁</text> 选择文件
-  </button>
-  <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
-</view>
-=======
+<!--index.wxml-->
+<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
 <view class="card file-upload">
   <text class="card-title">选择文件</text>
   <button class="primary-button" bindtap="chooseFile">
@@ -29,119 +25,137 @@
     </view>
   </picker>
 </view>
->>>>>>> REPLACE
-```
-
-接下来，我们需要在 index.ts 文件中添加相应的数据和方法：
-
-```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
-<<<<<<< SEARCH
-Component({
-  data: {
-    fileName: '',
-    translationResult: '',
-  },
-  methods: {
+    
+    <view class="card translate-button">
+      <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
+        <text class="icon">🔄</text> 开始翻译
+      </button>
+    </view>
+    
+    <view class="card translation-result" wx:if="{{translationResult}}">
+      <text class="card-title">翻译结果</text>
+      <view class="result-text">{{translationResult}}</view>
+      <button class="secondary-button" bindtap="downloadTranslation">
+        <text class="icon">⬇️</text> 下载结果
+      </button>
+    </view>
+  </view>
+</scroll-view>
 =======
-Component({
-  data: {
-    fileName: '',
-    translationResult: '',
-    languages: [
-      { code: 'en', name: '英语' },
-      { code: 'zh', name: '中文' },
-      { code: 'es', name: '西班牙语' },
-      { code: 'fr', name: '法语' },
-      { code: 'de', name: '德语' },
-      { code: 'ja', name: '日语' },
-      { code: 'ko', name: '韩语' },
-      { code: 'ru', name: '俄语' },
-      { code: 'ar', name: '阿拉伯语' },
-      { code: 'pt', name: '葡萄牙语' },
-      { code: 'it', name: '意大利语' },
-    ],
-    languageIndex: 0,
-  },
-  methods: {
-    onLanguageChange(e: any) {
-      this.setData({
-        languageIndex: e.detail.value
-      })
-    },
+<!--index.wxml-->
+<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="card file-upload">
+      <text class="card-title">选择文件</text>
+      <button class="primary-button" bindtap="chooseFile">
+        <text class="icon">📁</text> 选择文件
+      </button>
+      <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
+    </view>
+
+    <view class="card language-select">
+      <text class="card-title">选择目标语言</text>
+      <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
+        <view class="picker">
+          当前选择：{{languages[languageIndex].name}}
+        </view>
+      </picker>
+    </view>
+    
+    <view class="card translate-button">
+      <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
+        <text class="icon">🔄</text> 开始翻译
+      </button>
+    </view>
+    
+    <view class="card translation-result" wx:if="{{translationResult}}">
+      <text class="card-title">翻译结果</text>
+      <view class="result-text">{{translationResult}}</view>
+      <button class="secondary-button" bindtap="downloadTranslation">
+        <text class="icon">⬇️</text> 下载结果
+      </button>
+    </view>
+  </view>
+</scroll-view>
 >>>>>>> REPLACE
 ```
 
-现在，我们需要更新 translateFile 方法以使用选定的目标语言：
+现在，让我们修改 index.scss 文件以优化样式：
 
-```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
-<<<<<<< SEARCH
-    translateFile() {
-      if (!this.filePath) {
-        wx.showToast({
-          title: '请先选择文件',
-          icon: 'none'
-        })
-        return
-      }
-      
-      wx.showLoading({
-        title: '翻译中...',
-      })
-      
-      // 这里应该调用你的翻译API
-      // 以下是模拟API调用的示例
-      setTimeout(() => {
-        wx.hideLoading()
-        this.setData({
-          translationResult: '这是翻译后的内容。This is the translated content.'
-        })
-      }, 2000)
-    },
-=======
-    translateFile() {
-      if (!this.filePath) {
-        wx.showToast({
-          title: '请先选择文件',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const targetLanguage = this.data.languages[this.data.languageIndex].code
-      
-      wx.showLoading({
-        title: '翻译中...',
-      })
-      
-      // 这里应该调用你的翻译API
-      // 以下是模拟API调用的示例，现在包含目标语言
-      setTimeout(() => {
-        wx.hideLoading()
-        this.setData({
-          translationResult: `这是翻译成${this.data.languages[this.data.languageIndex].name}的内容。This is the content translated to ${targetLanguage}.`
-        })
-      }, 2000)
-    },
->>>>>>> REPLACE
-```
-
-最后，让我们在 index.scss 文件中添加一些样式来美化语言选择器：
-
-```python
+```scss
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
 <<<<<<< SEARCH
-.result-text {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  line-height: 1.4;
+/**index.scss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f0f0;
 }
 
-=======
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.primary-button, .secondary-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.primary-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.secondary-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.primary-button:disabled {
+  background-color: #a5d6a7;
+  color: #white;
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  display: block;
+}
+
 .result-text {
   background-color: #f5f5f5;
   border-radius: 4px;
@@ -159,10 +173,134 @@ Component({
     font-size: 16px;
   }
 }
+=======
+/**index.scss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
 
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.container {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: block;
+  color: #333;
+}
+
+.primary-button, .secondary-button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.primary-button {
+  background-color: #4CAF50;
+  color: white;
+
+  &:hover {
+    background-color: #45a049;
+  }
+
+  &:disabled {
+    background-color: #a5d6a7;
+    color: #fff;
+  }
+}
+
+.secondary-button {
+  background-color: #2196F3;
+  color: white;
+
+  &:hover {
+    background-color: #1e88e5;
+  }
+}
+
+.icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #666;
+  margin-top: 12px;
+  display: block;
+}
+
+.result-text {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.language-select {
+  .picker {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    color: #333;
+    transition: all 0.3s ease;
+
+    &:active {
+      background-color: #e0e0e0;
+    }
+  }
+}
 >>>>>>> REPLACE
 ```
 
-这些更改将在您的小程序中添加一个目标语言选择框，包括世界主流语言。用户可以在翻译之前选择目标语言，翻译功能将使用所选语言。请注意，您需要更新实际的翻译API调用以使用选定的目标语言代码。
+这些更改将优化首页布局，主要包括以下改进：
 
-这个实现提供了一个基本的框架，您可以根据需要进一步自定义和扩展功能。例如，您可能想要添加更多语言，或者根据用户的选择动态调整翻译API的调用。
+1. 增加了卡片的圆角和阴影效果，使界面更加现代化。
+2. 添加了悬停效果，提高了交互体验。
+3. 调整了字体大小和颜色，提高了可读性。
+4. 优化了按钮样式，增加了点击效果。
+5. 调整了间距和内边距，使布局更加协调。
+6. 增加了过渡效果，使界面更加流畅。
+
+这些更改将使您的小程序首页看起来更加精致和专业。如果您需要进一步的调整或有任何其他要求，请随时告诉我。
