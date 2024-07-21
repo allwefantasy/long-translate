@@ -30,6 +30,15 @@ page {
   display: block;
 }
 
+.language-select {
+  .picker {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+}
+
 .primary-button, .secondary-button {
   width: 100%;
   padding: 12px;

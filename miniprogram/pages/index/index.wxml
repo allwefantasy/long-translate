@@ -2,19 +2,28 @@
 <navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <view class="card file-upload">
-      <text class="card-title">选择文件</text>
-      <button class="primary-button" bindtap="chooseFile">
-        <text class="icon">📁</text> 选择文件
-      </button>
-      <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
+<view class="card file-upload">
+  <text class="card-title">选择文件</text>
+  <button class="primary-button" bindtap="chooseFile">
+    <text class="icon">📁</text> 选择文件
+  </button>
+  <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
+</view>
+
+<view class="card language-select">
+  <text class="card-title">选择目标语言</text>
+  <picker bindchange="onLanguageChange" value="{{targetLanguage}}" range="{{languages}}" range-key="name">
+    <view class="picker">
+      当前选择：{{languages[languages.findIndex(l => l.code === targetLanguage)].name}}
     </view>
-    
-    <view class="card translate-button">
-      <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
-        <text class="icon">🔄</text> 开始翻译
-      </button>
-    </view>
+  </picker>
+</view>
+
+<view class="card translate-button">
+  <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
+    <text class="icon">🔄</text> 开始翻译
+  </button>
+</view>
     
     <view class="card translation-result" wx:if="{{translationResult}}">
       <text class="card-title">翻译结果</text>
