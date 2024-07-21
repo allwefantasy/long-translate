@@ -2,35 +2,35 @@
 <navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <view class="card file-upload">
-      <text class="card-title">选择文件</text>
-      <button class="primary-button" bindtap="chooseFile">
-        <text class="icon">📁</text> 选择文件
-      </button>
-      <text class="file-name" wx:if="{{fileName}}">已选择：{{fileName}}</text>
-    </view>
-
-    <view class="card language-select">
-      <text class="card-title">选择目标语言</text>
-      <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
-        <view class="picker">
-          当前选择：{{languages[languageIndex].name}}
-        </view>
-      </picker>
-    </view>
-    
-    <view class="card translate-button">
-      <button class="primary-button" bindtap="translateFile" disabled="{{!fileName}}">
-        <text class="icon">🔄</text> 开始翻译
-      </button>
+    <view class="card file-and-language">
+      <view class="file-section">
+        <text class="section-title">选择文件</text>
+        <button class="select-button" bindtap="chooseFile">
+          <text class="icon">📁</text>
+          <text>{{fileName || '选择文件'}}</text>
+        </button>
+      </view>
+      <view class="language-section">
+        <text class="section-title">目标语言</text>
+        <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
+          <view class="select-button">
+            <text class="icon">🌐</text>
+            <text>{{languages[languageIndex].name}}</text>
+          </view>
+        </picker>
+      </view>
     </view>
     
     <view class="card translation-result" wx:if="{{translationResult}}">
       <text class="card-title">翻译结果</text>
       <view class="result-text">{{translationResult}}</view>
-      <button class="secondary-button" bindtap="downloadTranslation">
+      <button class="download-button" bindtap="downloadTranslation">
         <text class="icon">⬇️</text> 下载结果
       </button>
     </view>
   </view>
 </scroll-view>
+
+<view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
+  <text class="icon">🔄</text>
+</view>
