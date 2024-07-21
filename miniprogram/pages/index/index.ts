@@ -3,19 +3,6 @@ Component({
   data: {
     fileName: '',
     translationResult: '',
-    targetLanguage: 'en',
-    languages: [
-      { code: 'en', name: 'English' },
-      { code: 'zh', name: '中文' },
-      { code: 'es', name: 'Español' },
-      { code: 'fr', name: 'Français' },
-      { code: 'de', name: 'Deutsch' },
-      { code: 'ja', name: '日本語' },
-      { code: 'ko', name: '한국어' },
-      { code: 'ru', name: 'Русский' },
-      { code: 'ar', name: 'العربية' },
-      { code: 'hi', name: 'हिन्दी' },
-    ]
   },
   methods: {
     chooseFile() {
@@ -50,14 +37,9 @@ Component({
       setTimeout(() => {
         wx.hideLoading()
         this.setData({
-          translationResult: `这是翻译后的内容 (${this.data.targetLanguage})。This is the translated content.`
+          translationResult: '这是翻译后的内容。This is the translated content.'
         })
       }, 2000)
-    },
-    onLanguageChange(e: any) {
-      this.setData({
-        targetLanguage: e.detail.value
-      })
     },
     downloadTranslation() {
       if (!this.data.translationResult) {
