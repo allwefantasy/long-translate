@@ -71,6 +71,57 @@ Component({
         return
       }
       
+      wx.showActionSheet({
+        itemList: ['保存到相册', '保存到文件'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            this.saveToAlbum()
+          } else if (res.tapIndex === 1) {
+            this.saveToFile()
+          }
+        },
+        fail: (res) => {
+          console.log(res.errMsg)
+        }
+      })
+    },
+
+    saveToAlbum() {
+      const ctx = wx.createCanvasContext('translationCanvas')
+      ctx.setFillStyle('#ffffff')
+      ctx.fillRect(0, 0, 300, 450)
+      ctx.setFontSize(14)
+      ctx.setFillStyle('#000000')
+      ctx.fillText(this.data.translationResult, 10, 30, 280)
+      ctx.draw(false, () => {
+        wx.canvasToTempFilePath({
+          canvasId: 'translationCanvas',
+          success: (res) => {
+            wx.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success: () => {
+                wx.showToast({
+                  title: '已保存到相册',
+                  icon: 'success'
+                })
+              },
+              fail: (err) => {
+                console.error('保存到相册失败', err)
+                wx.showToast({
+                  title: '保存失败',
+                  icon: 'none'
+                })
+              }
+            })
+          },
+          fail: (err) => {
+            console.error('生成图片失败', err)
+          }
+        })
+      })
+    },
+
+    saveToFile() {
       const fileName = `translation_${new Date().getTime()}.txt`
       const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
       
@@ -80,12 +131,11 @@ Component({
         encoding: 'utf8',
         success: () => {
           wx.showToast({
-            title: '下载成功',
+            title: '保存成功',
             icon: 'success'
           })
           console.log('文件已保存到', filePath)
           
-          // 打开文件
           wx.openDocument({
             filePath: filePath,
             success: function (res) {
@@ -103,7 +153,7 @@ Component({
         fail: (err) => {
           console.error('写入文件失败', err)
           wx.showToast({
-            title: '下载失败',
+            title: '保存失败',
             icon: 'none'
           })
         }
