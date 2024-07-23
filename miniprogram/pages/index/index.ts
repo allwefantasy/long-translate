@@ -127,7 +127,7 @@ Component({
         success: (res) => {
           // 调用翻译API
           wx.request({
-            url: 'http://your-api-url/v1/llm/translate', // 替换为你的API地址
+            url: 'http://127.0.0.1:8999/v1/llm/translate',
             method: 'POST',
             header: {
               'content-type': 'application/json',
