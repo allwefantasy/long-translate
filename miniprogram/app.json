@@ -22,6 +22,9 @@
   "permission": {
     "scope.writePhotosAlbum": {
       "desc": "保存翻译结果到相册"
+    },
+    "scope.userStorage": {
+      "desc": "保存翻译结果到文件"
     }
   }
 }

@@ -86,6 +86,22 @@ Component({
                 title: '下载成功',
                 icon: 'success'
               })
+              console.log('文件已保存到', res.savedFilePath)
+              
+              // 打开文件
+              wx.openDocument({
+                filePath: res.savedFilePath,
+                success: function (res) {
+                  console.log('打开文档成功')
+                },
+                fail: function (res) {
+                  console.error('打开文档失败', res)
+                  wx.showToast({
+                    title: '打开文件失败',
+                    icon: 'none'
+                  })
+                }
+              })
             },
             fail: (err) => {
               console.error('保存文件失败', err)
