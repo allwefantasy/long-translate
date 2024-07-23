@@ -32,5 +32,5 @@
 </scroll-view>
 
 <view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
-  <text class="icon">🔄</text>
+  <text class="icon">🔄开始翻译</text>
 </view>

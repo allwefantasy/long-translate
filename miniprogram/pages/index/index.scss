@@ -46,7 +46,7 @@ page {
 }
 
 .select-button {
-  width: 100%;
+  width: 90%;
   padding: 12px;
   border-radius: 8px;
   border: 0.5px solid #e0e0e0; // 减小边框宽度
@@ -110,11 +110,8 @@ page {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  color: white;
+  width: 120px;
+  height: 60px;    
   display: flex;
   align-items: center;
   justify-content: center;
