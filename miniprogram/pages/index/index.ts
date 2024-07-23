@@ -73,14 +73,15 @@ Component({
       
       const fs = wx.getFileSystemManager()
       const fileName = `translation_${new Date().getTime()}.txt`
+      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
       
       fs.writeFile({
-        filePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
+        filePath: filePath,
         data: this.data.translationResult,
         encoding: 'utf8',
         success: () => {
-          wx.saveFile({
-            tempFilePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
+          fs.saveFile({
+            tempFilePath: filePath,
             success: (res) => {
               wx.showToast({
                 title: '下载成功',
