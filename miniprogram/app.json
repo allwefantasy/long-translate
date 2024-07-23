@@ -18,13 +18,5 @@
   },
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents",
-  "permission": {
-    "scope.writePhotosAlbum": {
-      "desc": "保存翻译结果到相册"
-    },
-    "scope.userStorage": {
-      "desc": "保存翻译结果到文件"
-    }
-  }
+  "lazyCodeLoading": "requiredComponents"
 }
