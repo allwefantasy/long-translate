@@ -104,6 +104,71 @@ Component({
           })
         }
       })
+    },
+    translateFile() {
+      if (!this.filePath) {
+        wx.showToast({
+          title: '请先选择文件',
+          icon: 'none'
+        })
+        return
+      }
+      
+      const targetLanguage = this.data.languages[this.data.languageIndex].code
+      
+      wx.showLoading({
+        title: '翻译中...',
+      })
+      
+      // 读取文件内容
+      wx.getFileSystemManager().readFile({
+        filePath: this.filePath,
+        encoding: 'utf-8',
+        success: (res) => {
+          // 调用翻译API
+          wx.request({
+            url: 'http://your-api-url/v1/llm/translate', // 替换为你的API地址
+            method: 'POST',
+            header: {
+              'content-type': 'application/json',
+              'x-user-token': 'your-user-token' // 替换为实际的用户token
+            },
+            data: {
+              text: res.data,
+              language: targetLanguage
+            },
+            success: (response: any) => {
+              wx.hideLoading()
+              if (response.statusCode === 200) {
+                this.setData({
+                  translationResult: response.data.translation
+                })
+              } else {
+                wx.showToast({
+                  title: '翻译失败',
+                  icon: 'none'
+                })
+              }
+            },
+            fail: (err) => {
+              wx.hideLoading()
+              console.error('翻译请求失败', err)
+              wx.showToast({
+                title: '翻译失败',
+                icon: 'none'
+              })
+            }
+          })
+        },
+        fail: (err) => {
+          wx.hideLoading()
+          console.error('读取文件失败', err)
+          wx.showToast({
+            title: '读取文件失败',
+            icon: 'none'
+          })
+        }
+      })
     }
   }
 })
