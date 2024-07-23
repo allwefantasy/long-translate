@@ -131,7 +131,7 @@ Component({
             method: 'POST',
             header: {
               'content-type': 'application/json',
-              'x-user-token': 'your-user-token' // 替换为实际的用户token
+              'x-user-token': 'your-user-token' 
             },
             data: {
               text: res.data,
