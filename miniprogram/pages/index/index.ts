@@ -71,43 +71,30 @@ Component({
         return
       }
       
-      const fs = wx.getFileSystemManager()
       const fileName = `translation_${new Date().getTime()}.txt`
       const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
       
-      fs.writeFile({
+      wx.getFileSystemManager().writeFile({
         filePath: filePath,
         data: this.data.translationResult,
         encoding: 'utf8',
         success: () => {
-          fs.saveFile({
-            tempFilePath: filePath,
-            success: (res) => {
-              wx.showToast({
-                title: '下载成功',
-                icon: 'success'
-              })
-              console.log('文件已保存到', res.savedFilePath)
-              
-              // 打开文件
-              wx.openDocument({
-                filePath: res.savedFilePath,
-                success: function (res) {
-                  console.log('打开文档成功')
-                },
-                fail: function (res) {
-                  console.error('打开文档失败', res)
-                  wx.showToast({
-                    title: '打开文件失败',
-                    icon: 'none'
-                  })
-                }
-              })
+          wx.showToast({
+            title: '下载成功',
+            icon: 'success'
+          })
+          console.log('文件已保存到', filePath)
+          
+          // 打开文件
+          wx.openDocument({
+            filePath: filePath,
+            success: function (res) {
+              console.log('打开文档成功')
             },
-            fail: (err) => {
-              console.error('保存文件失败', err)
+            fail: function (res) {
+              console.error('打开文档失败', res)
               wx.showToast({
-                title: '下载失败',
+                title: '打开文件失败',
                 icon: 'none'
               })
             }
