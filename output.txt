@@ -1,139 +1,26 @@
-根据用户的需求，我们需要修改文件下载的逻辑，使用 `wx.getFileSystemManager().saveFile` 替代即将废弃的 `wx.saveFile`。同时，我们需要解决 "tempFilePath file not exist" 的错误。让我们修改 `index.ts` 文件中的 `downloadTranslation` 方法。
+To address the invalid permissions in the app.json file, we need to remove the incorrect permission entries. Let's modify the app.json file to remove these invalid permissions. Here's the *SEARCH/REPLACE block* to make this change:
 
-以下是修改后的代码：
-
-```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
+```json
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/app.json
 <<<<<<< SEARCH
-    downloadTranslation() {
-      if (!this.data.translationResult) {
-        wx.showToast({
-          title: '没有可下载的内容',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const fs = wx.getFileSystemManager()
-      const fileName = `translation_${new Date().getTime()}.txt`
-      
-      fs.writeFile({
-        filePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
-        data: this.data.translationResult,
-        encoding: 'utf8',
-        success: () => {
-          wx.saveFile({
-            tempFilePath: `${wx.env.USER_DATA_PATH}/${fileName}`,
-            success: (res) => {
-              wx.showToast({
-                title: '下载成功',
-                icon: 'success'
-              })
-              console.log('文件已保存到', res.savedFilePath)
-              
-              // 打开文件
-              wx.openDocument({
-                filePath: res.savedFilePath,
-                success: function (res) {
-                  console.log('打开文档成功')
-                },
-                fail: function (res) {
-                  console.error('打开文档失败', res)
-                  wx.showToast({
-                    title: '打开文件失败',
-                    icon: 'none'
-                  })
-                }
-              })
-            },
-            fail: (err) => {
-              console.error('保存文件失败', err)
-              wx.showToast({
-                title: '下载失败',
-                icon: 'none'
-              })
-            }
-          })
-        },
-        fail: (err) => {
-          console.error('写入文件失败', err)
-          wx.showToast({
-            title: '下载失败',
-            icon: 'none'
-          })
-        }
-      })
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "保存翻译结果到相册"
     },
+    "scope.userStorage": {
+      "desc": "保存翻译结果到文件"
+    }
+  }
 =======
-    downloadTranslation() {
-      if (!this.data.translationResult) {
-        wx.showToast({
-          title: '没有可下载的内容',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const fs = wx.getFileSystemManager()
-      const fileName = `translation_${new Date().getTime()}.txt`
-      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      
-      fs.writeFile({
-        filePath: filePath,
-        data: this.data.translationResult,
-        encoding: 'utf8',
-        success: () => {
-          fs.saveFile({
-            tempFilePath: filePath,
-            success: (res) => {
-              wx.showToast({
-                title: '下载成功',
-                icon: 'success'
-              })
-              console.log('文件已保存到', res.savedFilePath)
-              
-              // 打开文件
-              wx.openDocument({
-                filePath: res.savedFilePath,
-                success: function (res) {
-                  console.log('打开文档成功')
-                },
-                fail: function (res) {
-                  console.error('打开文档失败', res)
-                  wx.showToast({
-                    title: '打开文件失败',
-                    icon: 'none'
-                  })
-                }
-              })
-            },
-            fail: (err) => {
-              console.error('保存文件失败', err)
-              wx.showToast({
-                title: '下载失败',
-                icon: 'none'
-              })
-            }
-          })
-        },
-        fail: (err) => {
-          console.error('写入文件失败', err)
-          wx.showToast({
-            title: '下载失败',
-            icon: 'none'
-          })
-        }
-      })
-    },
+  "lazyCodeLoading": "requiredComponents"
 >>>>>>> REPLACE
 ```
 
-这个修改主要做了以下几点改变：
+This change removes the invalid "permission" section from the app.json file. The WeChat Mini Program doesn't use these specific permission scopes in the way they were defined. Instead, the necessary permissions for file system access are typically handled automatically by the WeChat runtime environment.
 
-1. 使用 `wx.getFileSystemManager().saveFile` 替代了 `wx.saveFile`。
+For saving files, the Mini Program can use the wx.getFileSystemManager() API without needing explicit permissions in the app.json file. The ability to save files within the Mini Program's sandbox is generally allowed by default.
 
-2. 我们现在使用同一个 `filePath` 变量来保存临时文件路径和最终文件路径，这样可以确保 `tempFilePath` 文件存在。
+If you need to save files to the user's device or access the photo album, you should use the appropriate API calls (like wx.saveImageToPhotosAlbum() for saving images to the photo album), which will prompt the user for permission when necessary, without needing to declare these permissions in app.json.
 
-3. 整体逻辑保持不变，仍然是先写入文件，然后保存文件，最后尝试打开文件。
-
-这些修改应该能解决 "tempFilePath file not exist" 的错误，并且使用了推荐的 API 来保存文件。如果还有其他问题，请随时告诉我。
+Would you like me to explain or clarify anything about this change?
