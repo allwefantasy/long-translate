@@ -187,7 +187,7 @@ Component({
       } else {
         wx.hideLoading()
         wx.showToast({
-          title: '不支持的文件类型',
+          title: '只支持pdf/word/txt文件',
           icon: 'none'
         })
       }

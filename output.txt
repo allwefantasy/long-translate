@@ -1,136 +1,8 @@
-为了实现这个需求，我们需要修改 `translateFile` 方法来处理不同的文件类型。我们将添加一个函数来检查文件扩展名，并根据不同的文件类型使用不同的读取逻辑。对于 .pdf 和 .docx 文件，我们将读取二进制数据并进行 base64 编码。
+Certainly! I'll modify the `callTranslateAPI` function in the `index.ts` file to include polling for the translation result. Here's how we can implement this:
 
-以下是修改后的代码：
-
-```python
+```typescript
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
 <<<<<<< SEARCH
-    translateFile() {
-      if (!this.filePath) {
-        wx.showToast({
-          title: '请先选择文件',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const targetLanguage = this.data.languages[this.data.languageIndex].code
-      
-      wx.showLoading({
-        title: '翻译中...',
-      })
-      
-      // 读取文件内容
-      wx.getFileSystemManager().readFile({
-        filePath: this.filePath,
-        encoding: 'utf-8',
-        success: (res) => {
-          // 调用翻译API
-          wx.request({
-            url: 'https://route.api.mlsql.tech/v1/llm/translate',
-            method: 'POST',
-            header: {
-              'content-type': 'application/json',
-              'x-user-token': 'your-user-token' 
-            },
-            data: {
-              text: res.data,
-              language: targetLanguage
-            },
-            success: (response: any) => {
-              wx.hideLoading()
-              if (response.statusCode === 200) {
-                this.setData({
-                  translationResult: response.data.translation
-                })
-              } else {
-                wx.showToast({
-                  title: '翻译失败',
-                  icon: 'none'
-                })
-              }
-            },
-            fail: (err) => {
-              wx.hideLoading()
-              console.error('翻译请求失败', err)
-              wx.showToast({
-                title: '翻译失败',
-                icon: 'none'
-              })
-            }
-          })
-        },
-        fail: (err) => {
-          wx.hideLoading()
-          console.error('读取文件失败', err)
-          wx.showToast({
-            title: '读取文件失败',
-            icon: 'none'
-          })
-        }
-      })
-    }
-=======
-    translateFile() {
-      if (!this.filePath) {
-        wx.showToast({
-          title: '请先选择文件',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const targetLanguage = this.data.languages[this.data.languageIndex].code
-      
-      wx.showLoading({
-        title: '翻译中...',
-      })
-      
-      // 获取文件扩展名
-      const fileExtension = this.filePath.split('.').pop()?.toLowerCase()
-      
-      // 根据文件类型选择不同的读取方法
-      if (fileExtension === 'txt') {
-        this.readTextFile(targetLanguage)
-      } else if (fileExtension === 'pdf' || fileExtension === 'docx') {
-        this.readBinaryFile(targetLanguage)
-      } else {
-        wx.hideLoading()
-        wx.showToast({
-          title: '不支持的文件类型',
-          icon: 'none'
-        })
-      }
-    },
-
-    readTextFile(targetLanguage: string) {
-      wx.getFileSystemManager().readFile({
-        filePath: this.filePath,
-        encoding: 'utf-8',
-        success: (res) => {
-          this.callTranslateAPI(res.data, targetLanguage)
-        },
-        fail: (err) => {
-          this.handleFileReadError(err)
-        }
-      })
-    },
-
-    readBinaryFile(targetLanguage: string) {
-      wx.getFileSystemManager().readFile({
-        filePath: this.filePath,
-        success: (res) => {
-          const base64 = wx.arrayBufferToBase64(res.data)
-          const fileType = this.filePath.split('.').pop()
-          const dataUrl = `data:application/${fileType};base64,${base64}`
-          this.callTranslateAPI(dataUrl, targetLanguage)
-        },
-        fail: (err) => {
-          this.handleFileReadError(err)
-        }
-      })
-    },
-
     callTranslateAPI(data: string, targetLanguage: string) {
       wx.request({
         url: 'https://route.api.mlsql.tech/v1/llm/translate',
@@ -158,35 +30,100 @@
         }
       })
     },
-
-    handleFileReadError(err: any) {
-      wx.hideLoading()
-      console.error('读取文件失败', err)
-      wx.showToast({
-        title: '读取文件失败',
-        icon: 'none'
+=======
+    callTranslateAPI(data: string, targetLanguage: string) {
+      wx.request({
+        url: 'https://route.api.mlsql.tech/v1/llm/translate',
+        method: 'POST',
+        header: {
+          'content-type': 'application/json',
+          'x-user-token': 'your-user-token' 
+        },
+        data: {
+          text: data,
+          language: targetLanguage
+        },
+        success: (response: any) => {
+          if (response.statusCode === 200) {
+            const md5Hash = response.data.translation
+            this.pollTranslationResult(md5Hash)
+          } else {
+            this.handleTranslationError()
+          }
+        },
+        fail: (err) => {
+          this.handleTranslationError(err)
+        }
       })
     },
 
-    handleTranslationError(err?: any) {
-      wx.hideLoading()
-      if (err) {
-        console.error('翻译请求失败', err)
+    pollTranslationResult(md5Hash: string, maxRetries = 60, delay = 5000) {
+      let retries = 0
+      const poll = () => {
+        if (retries >= maxRetries) {
+          wx.hideLoading()
+          wx.showToast({
+            title: '翻译超时',
+            icon: 'none'
+          })
+          return
+        }
+
+        wx.request({
+          url: 'https://route.api.mlsql.tech/v1/llm/translate/result',
+          method: 'POST',
+          header: {
+            'content-type': 'application/json',
+            'x-user-token': 'your-user-token'
+          },
+          data: {
+            md5: md5Hash
+          },
+          success: (response: any) => {
+            if (response.statusCode === 200) {
+              wx.hideLoading()
+              this.setData({
+                translationResult: response.data.translation
+              })
+            } else if (response.statusCode === 404) {
+              retries++
+              setTimeout(poll, delay)
+            } else {
+              wx.hideLoading()
+              this.handleTranslationError()
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading()
+            this.handleTranslationError(err)
+          }
+        })
       }
-      wx.showToast({
-        title: '翻译失败',
-        icon: 'none'
-      })
-    }
+
+      poll()
+    },
 >>>>>>> REPLACE
 ```
 
-这个修改主要做了以下几点改变：
+This modification introduces a new `pollTranslationResult` method that will continuously check for the translation result until it's available or the maximum number of retries is reached. Here's a breakdown of the changes:
 
-1. 在 `translateFile` 方法中，我们首先检查文件的扩展名。
-2. 对于 .txt 文件，我们使用原来的 `readFile` 方法，并指定 'utf-8' 编码。
-3. 对于 .pdf 和 .docx 文件，我们使用新的 `readBinaryFile` 方法，该方法读取文件的二进制数据，然后将其转换为 base64 编码的数据 URL。
-4. 我们创建了几个辅助方法（`readTextFile`、`readBinaryFile`、`callTranslateAPI`、`handleFileReadError`、`handleTranslationError`）来使代码更加模块化和易于维护。
-5. 在 `callTranslateAPI` 方法中，我们统一了 API 调用的逻辑，无论是文本文件还是二进制文件。
+1. In the `callTranslateAPI` method:
+   - We now expect the initial response to contain an MD5 hash instead of the translation itself.
+   - Upon receiving a successful response, we call the new `pollTranslationResult` method with the MD5 hash.
 
-这个修改应该能够满足你的需求，同时也提高了代码的可读性和可维护性。请注意，你可能需要在服务器端相应地处理这些不同类型的输入。
+2. The new `pollTranslationResult` method:
+   - Takes the MD5 hash as an argument, along with optional parameters for max retries and delay between retries.
+   - It uses a recursive function `poll` to repeatedly check for the translation result.
+   - If the result is found (status 200), it updates the UI with the translation.
+   - If the result is not yet available (status 404), it schedules another check after the specified delay.
+   - If there's an error or the max retries are reached, it handles the error appropriately.
+
+3. The loading indicator (wx.showLoading) is now managed within these methods:
+   - It starts when the translation is requested (you should add this at the beginning of `translateFile`).
+   - It's hidden when the translation is received or if an error occurs.
+
+Remember to adjust the 'your-user-token' placeholder with the actual token you're using for authentication.
+
+This implementation will provide a smoother user experience, as it will continuously check for the translation result in the background without blocking the UI.
+
+Would you like me to explain or break down any part of this code further?
