@@ -176,54 +176,96 @@ Component({
         title: '翻译中...',
       })
       
-      // 读取文件内容
+      // 获取文件扩展名
+      const fileExtension = this.filePath.split('.').pop()?.toLowerCase()
+      
+      // 根据文件类型选择不同的读取方法
+      if (fileExtension === 'txt') {
+        this.readTextFile(targetLanguage)
+      } else if (fileExtension === 'pdf' || fileExtension === 'docx') {
+        this.readBinaryFile(targetLanguage)
+      } else {
+        wx.hideLoading()
+        wx.showToast({
+          title: '不支持的文件类型',
+          icon: 'none'
+        })
+      }
+    },
+
+    readTextFile(targetLanguage: string) {
       wx.getFileSystemManager().readFile({
         filePath: this.filePath,
         encoding: 'utf-8',
         success: (res) => {
-          // 调用翻译API
-          wx.request({
-            url: 'https://route.api.mlsql.tech/v1/llm/translate',
-            method: 'POST',
-            header: {
-              'content-type': 'application/json',
-              'x-user-token': 'your-user-token' 
-            },
-            data: {
-              text: res.data,
-              language: targetLanguage
-            },
-            success: (response: any) => {
-              wx.hideLoading()
-              if (response.statusCode === 200) {
-                this.setData({
-                  translationResult: response.data.translation
-                })
-              } else {
-                wx.showToast({
-                  title: '翻译失败',
-                  icon: 'none'
-                })
-              }
-            },
-            fail: (err) => {
-              wx.hideLoading()
-              console.error('翻译请求失败', err)
-              wx.showToast({
-                title: '翻译失败',
-                icon: 'none'
-              })
-            }
-          })
+          this.callTranslateAPI(res.data, targetLanguage)
         },
         fail: (err) => {
-          wx.hideLoading()
-          console.error('读取文件失败', err)
-          wx.showToast({
-            title: '读取文件失败',
-            icon: 'none'
-          })
+          this.handleFileReadError(err)
         }
+      })
+    },
+
+    readBinaryFile(targetLanguage: string) {
+      wx.getFileSystemManager().readFile({
+        filePath: this.filePath,
+        success: (res) => {
+          const base64 = wx.arrayBufferToBase64(res.data)
+          const fileType = this.filePath.split('.').pop()
+          const dataUrl = `data:application/${fileType};base64,${base64}`
+          this.callTranslateAPI(dataUrl, targetLanguage)
+        },
+        fail: (err) => {
+          this.handleFileReadError(err)
+        }
+      })
+    },
+
+    callTranslateAPI(data: string, targetLanguage: string) {
+      wx.request({
+        url: 'https://route.api.mlsql.tech/v1/llm/translate',
+        method: 'POST',
+        header: {
+          'content-type': 'application/json',
+          'x-user-token': 'your-user-token' 
+        },
+        data: {
+          text: data,
+          language: targetLanguage
+        },
+        success: (response: any) => {
+          wx.hideLoading()
+          if (response.statusCode === 200) {
+            this.setData({
+              translationResult: response.data.translation
+            })
+          } else {
+            this.handleTranslationError()
+          }
+        },
+        fail: (err) => {
+          this.handleTranslationError(err)
+        }
+      })
+    },
+
+    handleFileReadError(err: any) {
+      wx.hideLoading()
+      console.error('读取文件失败', err)
+      wx.showToast({
+        title: '读取文件失败',
+        icon: 'none'
+      })
+    },
+
+    handleTranslationError(err?: any) {
+      wx.hideLoading()
+      if (err) {
+        console.error('翻译请求失败', err)
+      }
+      wx.showToast({
+        title: '翻译失败',
+        icon: 'none'
       })
     }
   }
