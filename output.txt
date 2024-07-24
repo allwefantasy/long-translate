@@ -1,58 +1,86 @@
-为了实现保存翻译结果到相册或文件系统的功能，我们需要修改小程序的代码。主要的改动将在 `index.ts` 文件中进行。我们将添加一个新的方法来处理保存功能，并修改现有的 `downloadTranslation` 方法。
+为了满足用户的需求，我们需要对 index.wxml 和 index.ts 文件进行修改。首先，我们需要在界面上添加一个"继续"按钮，然后在组件中添加相应的状态和方法来处理这个新功能。
 
-以下是需要进行的修改：
+让我们先修改 index.wxml 文件：
+
+```python
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
+<<<<<<< SEARCH
+<view class="card translation-result" wx:if="{{translationResult}}">
+  <text class="card-title">翻译结果</text>
+  <view class="result-text">{{translationResult}}</view>
+  <button class="download-button" bindtap="downloadTranslation">
+    <text class="icon">⬇️</text> 下载结果
+  </button>
+</view>
+=======
+<view class="card translation-result" wx:if="{{translationResult}}">
+  <text class="card-title">翻译结果</text>
+  <view class="result-text">{{translationResult}}</view>
+  <view class="button-group">
+    <button class="download-button" bindtap="downloadTranslation">
+      <text class="icon">⬇️</text> 下载结果
+    </button>
+    <button class="continue-button" bindtap="continueTranslation" wx:if="{{isDownloading}}">
+      <text class="icon">🔄</text> 继续
+    </button>
+  </view>
+</view>
+>>>>>>> REPLACE
+```
+
+现在让我们修改 index.ts 文件来添加新的状态和方法：
 
 ```python
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
 <<<<<<< SEARCH
-    downloadTranslation() {
-      if (!this.data.translationResult) {
-        wx.showToast({
-          title: '没有可下载的内容',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const fileName = `translation_${new Date().getTime()}.txt`
-      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      
-      wx.getFileSystemManager().writeFile({
-        filePath: filePath,
-        data: this.data.translationResult,
-        encoding: 'utf8',
-        success: () => {
-          wx.showToast({
-            title: '下载成功',
-            icon: 'success'
-          })
-          console.log('文件已保存到', filePath)
-          
-          // 打开文件
-          wx.openDocument({
-            filePath: filePath,
-            success: function (res) {
-              console.log('打开文档成功')
-            },
-            fail: function (res) {
-              console.error('打开文档失败', res)
-              wx.showToast({
-                title: '打开文件失败',
-                icon: 'none'
-              })
-            }
-          })
-        },
-        fail: (err) => {
-          console.error('写入文件失败', err)
-          wx.showToast({
-            title: '下载失败',
-            icon: 'none'
-          })
-        }
-      })
-    },
+Component({
+  data: {
+    fileName: '',
+    translationResult: '',
+    languages: [
+      { code: 'en', name: '英语' },
+      { code: 'zh', name: '中文' },
+      { code: 'es', name: '西班牙语' },
+      { code: 'fr', name: '法语' },
+      { code: 'de', name: '德语' },
+      { code: 'ja', name: '日语' },
+      { code: 'ko', name: '韩语' },
+      { code: 'ru', name: '俄语' },
+      { code: 'ar', name: '阿拉伯语' },
+      { code: 'pt', name: '葡萄牙语' },
+      { code: 'it', name: '意大利语' },
+    ],
+    languageIndex: 0,
+  },
 =======
+Component({
+  data: {
+    fileName: '',
+    translationResult: '',
+    languages: [
+      { code: 'en', name: '英语' },
+      { code: 'zh', name: '中文' },
+      { code: 'es', name: '西班牙语' },
+      { code: 'fr', name: '法语' },
+      { code: 'de', name: '德语' },
+      { code: 'ja', name: '日语' },
+      { code: 'ko', name: '韩语' },
+      { code: 'ru', name: '俄语' },
+      { code: 'ar', name: '阿拉伯语' },
+      { code: 'pt', name: '葡萄牙语' },
+      { code: 'it', name: '意大利语' },
+    ],
+    languageIndex: 0,
+    isDownloading: false,
+  },
+>>>>>>> REPLACE
+```
+
+接下来，我们需要修改 downloadTranslation 方法和添加 continueTranslation 方法：
+
+```python
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
+<<<<<<< SEARCH
     downloadTranslation() {
       if (!this.data.translationResult) {
         wx.showToast({
@@ -76,7 +104,50 @@
         }
       })
     },
+=======
+    downloadTranslation() {
+      if (!this.data.translationResult) {
+        wx.showToast({
+          title: '没有可下载的内容',
+          icon: 'none'
+        })
+        return
+      }
+      
+      this.setData({ isDownloading: true })
+      
+      wx.showActionSheet({
+        itemList: ['保存到相册', '保存到文件'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            this.saveToAlbum()
+          } else if (res.tapIndex === 1) {
+            this.saveToFile()
+          }
+        },
+        fail: (res) => {
+          console.log(res.errMsg)
+          this.setData({ isDownloading: false })
+        }
+      })
+    },
 
+    continueTranslation() {
+      this.setData({
+        fileName: '',
+        translationResult: '',
+        isDownloading: false
+      })
+      this.filePath = ''
+    },
+>>>>>>> REPLACE
+```
+
+最后，我们需要在 saveToAlbum 和 saveToFile 方法的成功回调中添加状态重置：
+
+```python
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
+<<<<<<< SEARCH
     saveToAlbum() {
       const ctx = wx.createCanvasContext('translationCanvas')
       ctx.setFillStyle('#ffffff')
@@ -150,32 +221,154 @@
         }
       })
     },
+=======
+    saveToAlbum() {
+      const ctx = wx.createCanvasContext('translationCanvas')
+      ctx.setFillStyle('#ffffff')
+      ctx.fillRect(0, 0, 300, 450)
+      ctx.setFontSize(14)
+      ctx.setFillStyle('#000000')
+      ctx.fillText(this.data.translationResult, 10, 30, 280)
+      ctx.draw(false, () => {
+        wx.canvasToTempFilePath({
+          canvasId: 'translationCanvas',
+          success: (res) => {
+            wx.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success: () => {
+                wx.showToast({
+                  title: '已保存到相册',
+                  icon: 'success'
+                })
+                this.setData({ isDownloading: false })
+              },
+              fail: (err) => {
+                console.error('保存到相册失败', err)
+                wx.showToast({
+                  title: '保存失败',
+                  icon: 'none'
+                })
+                this.setData({ isDownloading: false })
+              }
+            })
+          },
+          fail: (err) => {
+            console.error('生成图片失败', err)
+            this.setData({ isDownloading: false })
+          }
+        })
+      })
+    },
+
+    saveToFile() {
+      const fileName = `translation_${new Date().getTime()}.txt`
+      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
+      
+      wx.getFileSystemManager().writeFile({
+        filePath: filePath,
+        data: this.data.translationResult,
+        encoding: 'utf8',
+        success: () => {
+          wx.showToast({
+            title: '保存成功',
+            icon: 'success'
+          })
+          console.log('文件已保存到', filePath)
+          
+          wx.openDocument({
+            filePath: filePath,
+            success: function (res) {
+              console.log('打开文档成功')
+            },
+            fail: function (res) {
+              console.error('打开文档失败', res)
+              wx.showToast({
+                title: '打开文件失败',
+                icon: 'none'
+              })
+            }
+          })
+          this.setData({ isDownloading: false })
+        },
+        fail: (err) => {
+          console.error('写入文件失败', err)
+          wx.showToast({
+            title: '保存失败',
+            icon: 'none'
+          })
+          this.setData({ isDownloading: false })
+        }
+      })
+    },
 >>>>>>> REPLACE
 ```
 
-这些修改实现了以下功能：
-
-1. 当用户点击下载按钮时，会弹出一个操作菜单，让用户选择保存到相册或保存到文件。
-
-2. 如果选择保存到相册，会将翻译结果绘制到一个 canvas 上，然后将 canvas 转换为图片并保存到相册中。
-
-3. 如果选择保存到文件，会将翻译结果保存为文本文件，并尝试打开该文件。
-
-为了支持将翻译结果保存为图片，我们还需要在 WXML 文件中添加一个 canvas 元素：
+最后，我们需要更新一下 index.scss 文件来添加新的样式：
 
 ```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
 <<<<<<< SEARCH
-<view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
-  <text class="icon">🔄开始翻译</text>
-</view>
-=======
-<view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
-  <text class="icon">🔄开始翻译</text>
-</view>
+.download-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #2196F3;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 
-<canvas canvas-id="translationCanvas" style="width: 300px; height: 450px; position: fixed; left: -1000px; top: -1000px;"></canvas>
+  &:active {
+    background-color: #1e88e5;
+    transform: scale(0.98);
+  }
+}
+=======
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.download-button, .continue-button {
+  width: 48%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.download-button {
+  background-color: #2196F3;
+  color: white;
+
+  &:active {
+    background-color: #1e88e5;
+  }
+}
+
+.continue-button {
+  background-color: #4CAF50;
+  color: white;
+
+  &:active {
+    background-color: #45a049;
+  }
+}
 >>>>>>> REPLACE
 ```
 
-这些修改将允许用户选择将翻译结果保存到相册（作为图片）或保存到文件系统（作为文本文件）。用户体验会更加灵活，可以根据自己的需求选择合适的保存方式。
+这些修改将添加一个"继续"按钮，当用户处于下载状态时它会出现。点击"继续"按钮将清除当前状态并返回到初始状态。同时，我们还改进了下载按钮的布局，使其与新添加的继续按钮并排显示。

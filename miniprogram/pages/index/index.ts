@@ -181,7 +181,7 @@ Component({
         success: (res) => {
           // 调用翻译API
           wx.request({
-            url: 'http://47.98.178.196:8999/v1/llm/translate',
+            url: 'https://route.api.mlsql.tech/v1/llm/translate',
             method: 'POST',
             header: {
               'content-type': 'application/json',
