@@ -1,4 +1,6 @@
-为了实现让用户选择保存目录的功能，我们需要使用微信小程序的文件系统API。由于微信小程序的安全限制，我们不能直接访问用户的文件系统，但可以使用`wx.saveFileToDisk`API来让用户选择保存位置。以下是修改后的代码：
+非常感谢您的反馈。您是对的，`wx.saveFileToDisk` 在某些场景下可能无法使用。让我们提供一个更通用的解决方案，它可以在更多设备和场景下工作。我们将使用 `wx.saveFile` API，它可以将文件保存到用户的本地文件系统中的应用专属目录，然后提供一个选项让用户分享或打开这个文件。
+
+下面是更新后的代码：
 
 ```python
 ##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
@@ -30,39 +32,53 @@
 =======
     saveToFile() {
       const fileName = `translation_${new Date().getTime()}.txt`
-      
-      // 创建临时文件
       const tempFilePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      wx.getFileSystemManager().writeFileSync(
-        tempFilePath,
-        this.data.translationResult,
-        'utf8'
-      )
       
-      // 调用保存文件接口，让用户选择保存位置
-      wx.saveFileToDisk({
+      // 先将内容写入临时文件
+      wx.getFileSystemManager().writeFile({
         filePath: tempFilePath,
-        success: (res) => {
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success'
+        data: this.data.translationResult,
+        encoding: 'utf8',
+        success: () => {
+          // 将临时文件保存到本地文件系统
+          wx.saveFile({
+            tempFilePath: tempFilePath,
+            success: (res) => {
+              const savedFilePath = res.savedFilePath
+              wx.showModal({
+                title: '文件已保存',
+                content: '文件已保存到本地。您想要分享这个文件吗？',
+                confirmText: '分享',
+                cancelText: '关闭',
+                success: (res) => {
+                  if (res.confirm) {
+                    wx.shareFileMessage({
+                      filePath: savedFilePath,
+                      success: () => {
+                        console.log('文件分享成功')
+                      },
+                      fail: (err) => {
+                        console.error('文件分享失败', err)
+                      }
+                    })
+                  }
+                }
+              })
+            },
+            fail: (err) => {
+              console.error('保存文件失败', err)
+              wx.showToast({
+                title: '保存失败',
+                icon: 'none'
+              })
+            }
           })
-          console.log('文件已保存')
         },
         fail: (err) => {
-          console.error('保存文件失败', err)
+          console.error('写入临时文件失败', err)
           wx.showToast({
             title: '保存失败',
             icon: 'none'
-          })
-        },
-        complete: () => {
-          // 删除临时文件
-          wx.getFileSystemManager().unlink({
-            filePath: tempFilePath,
-            fail: (err) => {
-              console.error('删除临时文件失败', err)
-            }
           })
         }
       })
@@ -70,18 +86,22 @@
 >>>>>>> REPLACE
 ```
 
-这个修改做了以下几个改变：
+这个新的实现做了以下改变：
 
-1. 我们首先在小程序的临时文件系统中创建一个文件，并写入翻译结果。
+1. 我们仍然首先创建一个临时文件并写入翻译结果。
 
-2. 然后我们使用`wx.saveFileToDisk`API，这会打开一个系统对话框，让用户选择保存位置。这个API的行为会根据设备的不同而有所不同：
-   - 在 iOS 设备上，它会打开"文件"应用，让用户选择保存位置。
-   - 在 Android 设备上，它会打开文件管理器，让用户选择保存位置。
+2. 然后，我们使用 `wx.saveFile` API 将这个临时文件保存到应用的本地文件系统中。这个API会自动选择一个合适的位置来保存文件。
 
-3. 保存成功后，我们显示一个成功的提示。
+3. 如果保存成功，我们会显示一个模态框，告诉用户文件已经保存，并询问是否要分享这个文件。
 
-4. 如果保存失败，我们显示一个失败的提示。
+4. 如果用户选择分享，我们使用 `wx.shareFileMessage` API 来分享这个文件。这会打开系统的分享菜单，用户可以选择如何分享这个文件（例如，通过微信、邮件等）。
 
-5. 无论保存成功与否，我们都会在操作完成后删除临时文件。
+5. 如果在任何步骤中出现错误，我们都会显示一个错误提示。
 
-这种方法允许用户选择他们想要的任何位置来保存文件，与 iOS 和 Android 的标准保存行为一致。请注意，`wx.saveFileToDisk` API 需要在 PC 端小程序和开发者工具中更改 `项目配置` > `本地设置` > `不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书` 为 `true`。
+这种方法的优点是：
+
+- 它可以在所有支持的设备上工作，不仅限于支持 `wx.saveFileToDisk` 的设备。
+- 它提供了一个分享选项，让用户可以更方便地将文件发送到其他应用或分享给其他人。
+- 即使用户的设备不支持直接选择保存位置，文件也会被保存到一个安全的位置。
+
+请注意，保存的文件会存储在小程序的本地文件系统中，用户可以在小程序的设置中查看和管理这些文件。
