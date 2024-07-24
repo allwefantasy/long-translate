@@ -123,39 +123,24 @@ Component({
 
     saveToFile() {
       const fileName = `translation_${new Date().getTime()}.txt`
+      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
       
-      // 创建临时文件
-      const tempFilePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      wx.getFileSystemManager().writeFileSync(
-        tempFilePath,
-        this.data.translationResult,
-        'utf8'
-      )
-      
-      // 调用保存文件接口，让用户选择保存位置
-      wx.saveFileToDisk({
-        filePath: tempFilePath,
-        success: (res) => {
+      wx.getFileSystemManager().writeFile({
+        filePath: filePath,
+        data: this.data.translationResult,
+        encoding: 'utf8',
+        success: () => {
           wx.showToast({
             title: '保存成功',
             icon: 'success'
           })
-          console.log('文件已保存')
+          console.log('文件已保存到', filePath)                    
         },
         fail: (err) => {
-          console.error('保存文件失败', err)
+          console.error('写入文件失败', err)
           wx.showToast({
             title: '保存失败',
             icon: 'none'
-          })
-        },
-        complete: () => {
-          // 删除临时文件
-          wx.getFileSystemManager().unlink({
-            filePath: tempFilePath,
-            fail: (err) => {
-              console.error('删除临时文件失败', err)
-            }
           })
         }
       })
