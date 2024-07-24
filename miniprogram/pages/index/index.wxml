@@ -19,6 +19,9 @@
           </view>
         </picker>
       </view>
+      <button class="translate-button" bindtap="translateFile" wx:if="{{fileName}}">
+        <text class="icon">🔄</text> 开始翻译
+      </button>
     </view>
     
     <view class="card translation-result" wx:if="{{translationResult}}">
