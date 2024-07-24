@@ -34,8 +34,4 @@
   </view>
 </scroll-view>
 
-<view class="fab" bindtap="translateFile" wx:if="{{fileName}}">
-  <text class="icon">🔄开始翻译</text>
-</view>
-
 <canvas canvas-id="translationCanvas" style="width: 300px; height: 450px; position: fixed; left: -1000px; top: -1000px;"></canvas>
