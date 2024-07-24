@@ -131,20 +131,16 @@ Component({
         data: this.data.translationResult,
         encoding: 'utf8',
         success: () => {
-          // 将临时文件保存到本地文件系统
-          wx.saveFile({
-            tempFilePath: tempFilePath,
-            success: (res) => {
-              const savedFilePath = res.savedFilePath
-              wx.showModal({
-                title: '文件已保存',
+          console.log(tempFilePath)
+          wx.showModal({
+                title: `文件已保存`,
                 content: '文件已保存到本地。您想要分享这个文件吗？',
                 confirmText: '分享',
                 cancelText: '关闭',
                 success: (res) => {
                   if (res.confirm) {
                     wx.shareFileMessage({
-                      filePath: savedFilePath,
+                      filePath: tempFilePath,
                       success: () => {
                         console.log('文件分享成功')
                       },
@@ -155,15 +151,6 @@ Component({
                   }
                 }
               })
-            },
-            fail: (err) => {
-              console.error('保存文件失败', err)
-              wx.showToast({
-                title: '保存失败',
-                icon: 'none'
-              })
-            }
-          })
         },
         fail: (err) => {
           console.error('写入临时文件失败', err)

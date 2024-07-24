@@ -1,107 +1,105 @@
-非常感谢您的反馈。您是对的，`wx.saveFileToDisk` 在某些场景下可能无法使用。让我们提供一个更通用的解决方案，它可以在更多设备和场景下工作。我们将使用 `wx.saveFile` API，它可以将文件保存到用户的本地文件系统中的应用专属目录，然后提供一个选项让用户分享或打开这个文件。
-
-下面是更新后的代码：
+为了实现这个需求，我们需要修改小程序的页面布局，将翻译按钮放在目标语言选择器的下方。我们需要更新 index.wxml 和 index.scss 文件。以下是需要进行的更改：
 
 ```python
-##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
 <<<<<<< SEARCH
-    saveToFile() {
-      const fileName = `translation_${new Date().getTime()}.txt`
-      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      
-      wx.getFileSystemManager().writeFile({
-        filePath: filePath,
-        data: this.data.translationResult,
-        encoding: 'utf8',
-        success: () => {
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success'
-          })
-          console.log('文件已保存到', filePath)                    
-        },
-        fail: (err) => {
-          console.error('写入文件失败', err)
-          wx.showToast({
-            title: '保存失败',
-            icon: 'none'
-          })
-        }
-      })
-    },
+    <view class="card file-and-language">
+      <view class="file-section">
+        <text class="section-title">选择文件</text>
+        <button class="select-button" bindtap="chooseFile">
+          <text class="icon">📁</text>
+          <text>{{fileName || '选择文件'}}</text>
+        </button>
+      </view>
+      <view class="language-section">
+        <text class="section-title">目标语言</text>
+        <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
+          <view class="select-button">
+            <text class="icon">🌐</text>
+            <text>{{languages[languageIndex].name}}</text>
+          </view>
+        </picker>
+      </view>
+    </view>
 =======
-    saveToFile() {
-      const fileName = `translation_${new Date().getTime()}.txt`
-      const tempFilePath = `${wx.env.USER_DATA_PATH}/${fileName}`
-      
-      // 先将内容写入临时文件
-      wx.getFileSystemManager().writeFile({
-        filePath: tempFilePath,
-        data: this.data.translationResult,
-        encoding: 'utf8',
-        success: () => {
-          // 将临时文件保存到本地文件系统
-          wx.saveFile({
-            tempFilePath: tempFilePath,
-            success: (res) => {
-              const savedFilePath = res.savedFilePath
-              wx.showModal({
-                title: '文件已保存',
-                content: '文件已保存到本地。您想要分享这个文件吗？',
-                confirmText: '分享',
-                cancelText: '关闭',
-                success: (res) => {
-                  if (res.confirm) {
-                    wx.shareFileMessage({
-                      filePath: savedFilePath,
-                      success: () => {
-                        console.log('文件分享成功')
-                      },
-                      fail: (err) => {
-                        console.error('文件分享失败', err)
-                      }
-                    })
-                  }
-                }
-              })
-            },
-            fail: (err) => {
-              console.error('保存文件失败', err)
-              wx.showToast({
-                title: '保存失败',
-                icon: 'none'
-              })
-            }
-          })
-        },
-        fail: (err) => {
-          console.error('写入临时文件失败', err)
-          wx.showToast({
-            title: '保存失败',
-            icon: 'none'
-          })
-        }
-      })
-    },
+    <view class="card file-and-language">
+      <view class="file-section">
+        <text class="section-title">选择文件</text>
+        <button class="select-button" bindtap="chooseFile">
+          <text class="icon">📁</text>
+          <text>{{fileName || '选择文件'}}</text>
+        </button>
+      </view>
+      <view class="language-section">
+        <text class="section-title">目标语言</text>
+        <picker bindchange="onLanguageChange" value="{{languageIndex}}" range="{{languages}}" range-key="name">
+          <view class="select-button">
+            <text class="icon">🌐</text>
+            <text>{{languages[languageIndex].name}}</text>
+          </view>
+        </picker>
+      </view>
+      <button class="translate-button" bindtap="translateFile" wx:if="{{fileName}}">
+        <text class="icon">🔄</text> 开始翻译
+      </button>
+    </view>
 >>>>>>> REPLACE
 ```
 
-这个新的实现做了以下改变：
+```python
+##File: /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
+<<<<<<< SEARCH
+.fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 120px;
+  height: 60px;    
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 
-1. 我们仍然首先创建一个临时文件并写入翻译结果。
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}
+=======
+.translate-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  transition: all 0.3s ease;
 
-2. 然后，我们使用 `wx.saveFile` API 将这个临时文件保存到应用的本地文件系统中。这个API会自动选择一个合适的位置来保存文件。
+  &:active {
+    background-color: #45a049;
+    transform: scale(0.98);
+  }
+}
 
-3. 如果保存成功，我们会显示一个模态框，告诉用户文件已经保存，并询问是否要分享这个文件。
+.icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+>>>>>>> REPLACE
+```
 
-4. 如果用户选择分享，我们使用 `wx.shareFileMessage` API 来分享这个文件。这会打开系统的分享菜单，用户可以选择如何分享这个文件（例如，通过微信、邮件等）。
+这些更改将实现以下效果：
 
-5. 如果在任何步骤中出现错误，我们都会显示一个错误提示。
+1. 在 index.wxml 文件中，我们将翻译按钮添加到了 file-and-language 卡片内部，紧跟在语言选择器后面。
+2. 在 index.scss 文件中，我们移除了浮动操作按钮（FAB）的样式，并添加了新的 translate-button 样式。
+3. 翻译按钮只有在文件被选择后才会显示（通过 wx:if="{{fileName}}" 控制）。
 
-这种方法的优点是：
-
-- 它可以在所有支持的设备上工作，不仅限于支持 `wx.saveFileToDisk` 的设备。
-- 它提供了一个分享选项，让用户可以更方便地将文件发送到其他应用或分享给其他人。
-- 即使用户的设备不支持直接选择保存位置，文件也会被保存到一个安全的位置。
-
-请注意，保存的文件会存储在小程序的本地文件系统中，用户可以在小程序的设置中查看和管理这些文件。
+这些更改将使翻译按钮放置在目标语言选择器下方，并与整体设计保持一致。按钮将在用户选择文件后才显示，提供更直观的用户体验。
