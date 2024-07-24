@@ -123,21 +123,50 @@ Component({
 
     saveToFile() {
       const fileName = `translation_${new Date().getTime()}.txt`
-      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
+      const tempFilePath = `${wx.env.USER_DATA_PATH}/${fileName}`
       
+      // 先将内容写入临时文件
       wx.getFileSystemManager().writeFile({
-        filePath: filePath,
+        filePath: tempFilePath,
         data: this.data.translationResult,
         encoding: 'utf8',
         success: () => {
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success'
+          // 将临时文件保存到本地文件系统
+          wx.saveFile({
+            tempFilePath: tempFilePath,
+            success: (res) => {
+              const savedFilePath = res.savedFilePath
+              wx.showModal({
+                title: '文件已保存',
+                content: '文件已保存到本地。您想要分享这个文件吗？',
+                confirmText: '分享',
+                cancelText: '关闭',
+                success: (res) => {
+                  if (res.confirm) {
+                    wx.shareFileMessage({
+                      filePath: savedFilePath,
+                      success: () => {
+                        console.log('文件分享成功')
+                      },
+                      fail: (err) => {
+                        console.error('文件分享失败', err)
+                      }
+                    })
+                  }
+                }
+              })
+            },
+            fail: (err) => {
+              console.error('保存文件失败', err)
+              wx.showToast({
+                title: '保存失败',
+                icon: 'none'
+              })
+            }
           })
-          console.log('文件已保存到', filePath)                    
         },
         fail: (err) => {
-          console.error('写入文件失败', err)
+          console.error('写入临时文件失败', err)
           wx.showToast({
             title: '保存失败',
             icon: 'none'
