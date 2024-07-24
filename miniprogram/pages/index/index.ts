@@ -234,11 +234,9 @@ Component({
           language: targetLanguage
         },
         success: (response: any) => {
-          wx.hideLoading()
           if (response.statusCode === 200) {
-            this.setData({
-              translationResult: response.data.translation
-            })
+            const md5Hash = response.data.translation
+            this.pollTranslationResult(md5Hash)
           } else {
             this.handleTranslationError()
           }
@@ -247,6 +245,52 @@ Component({
           this.handleTranslationError(err)
         }
       })
+    },
+
+    pollTranslationResult(md5Hash: string, maxRetries = 60, delay = 5000) {
+      let retries = 0
+      const poll = () => {
+        if (retries >= maxRetries) {
+          wx.hideLoading()
+          wx.showToast({
+            title: '翻译超时',
+            icon: 'none'
+          })
+          return
+        }
+
+        wx.request({
+          url: 'https://route.api.mlsql.tech/v1/llm/translate/result',
+          method: 'POST',
+          header: {
+            'content-type': 'application/json',
+            'x-user-token': 'your-user-token'
+          },
+          data: {
+            md5: md5Hash
+          },
+          success: (response: any) => {
+            if (response.statusCode === 200) {
+              wx.hideLoading()
+              this.setData({
+                translationResult: response.data.translation
+              })
+            } else if (response.statusCode === 404) {
+              retries++
+              setTimeout(poll, delay)
+            } else {
+              wx.hideLoading()
+              this.handleTranslationError()
+            }
+          },
+          fail: (err) => {
+            wx.hideLoading()
+            this.handleTranslationError(err)
+          }
+        })
+      }
+
+      poll()
     },
 
     handleFileReadError(err: any) {
