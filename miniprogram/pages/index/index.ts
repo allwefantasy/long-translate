@@ -17,6 +17,7 @@ Component({
       { code: 'it', name: '意大利语' },
     ],
     languageIndex: 0,
+    isDownloading: false,
   },
   methods: {
     onLanguageChange(e: any) {
@@ -71,6 +72,8 @@ Component({
         return
       }
       
+      this.setData({ isDownloading: true })
+      
       wx.showActionSheet({
         itemList: ['保存到相册', '保存到文件'],
         success: (res) => {
@@ -82,8 +85,18 @@ Component({
         },
         fail: (res) => {
           console.log(res.errMsg)
+          this.setData({ isDownloading: false })
         }
       })
+    },
+
+    continueTranslation() {
+      this.setData({
+        fileName: '',
+        translationResult: '',
+        isDownloading: false
+      })
+      this.filePath = ''
     },
 
     saveToAlbum() {
@@ -104,6 +117,7 @@ Component({
                   title: '已保存到相册',
                   icon: 'success'
                 })
+                this.setData({ isDownloading: false })
               },
               fail: (err) => {
                 console.error('保存到相册失败', err)
@@ -111,11 +125,13 @@ Component({
                   title: '保存失败',
                   icon: 'none'
                 })
+                this.setData({ isDownloading: false })
               }
             })
           },
           fail: (err) => {
             console.error('生成图片失败', err)
+            this.setData({ isDownloading: false })
           }
         })
       })
@@ -149,6 +165,7 @@ Component({
               })
             }
           })
+          this.setData({ isDownloading: false })
         },
         fail: (err) => {
           console.error('写入文件失败', err)
@@ -156,6 +173,7 @@ Component({
             title: '保存失败',
             icon: 'none'
           })
+          this.setData({ isDownloading: false })
         }
       })
     },

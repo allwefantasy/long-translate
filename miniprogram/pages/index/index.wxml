@@ -21,13 +21,18 @@
       </view>
     </view>
     
-    <view class="card translation-result" wx:if="{{translationResult}}">
-      <text class="card-title">翻译结果</text>
-      <view class="result-text">{{translationResult}}</view>
-      <button class="download-button" bindtap="downloadTranslation">
-        <text class="icon">⬇️</text> 下载结果
-      </button>
-    </view>
+<view class="card translation-result" wx:if="{{translationResult}}">
+  <text class="card-title">翻译结果</text>
+  <view class="result-text">{{translationResult}}</view>
+  <view class="button-group">
+    <button class="download-button" bindtap="downloadTranslation">
+      <text class="icon">⬇️</text> 下载结果
+    </button>
+    <button class="continue-button" bindtap="continueTranslation" wx:if="{{isDownloading}}">
+      <text class="icon">🔄</text> 继续
+    </button>
+  </view>
+</view>
   </view>
 </scroll-view>
 

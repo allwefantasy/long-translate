@@ -86,13 +86,17 @@ page {
   color: #333;
 }
 
-.download-button {
-  width: 100%;
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.download-button, .continue-button {
+  width: 48%;
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background-color: #2196F3;
-  color: white;
   font-size: 14px;
   font-weight: 600;
   display: flex;
@@ -101,8 +105,25 @@ page {
   transition: all 0.3s ease;
 
   &:active {
-    background-color: #1e88e5;
     transform: scale(0.98);
+  }
+}
+
+.download-button {
+  background-color: #2196F3;
+  color: white;
+
+  &:active {
+    background-color: #1e88e5;
+  }
+}
+
+.continue-button {
+  background-color: #4CAF50;
+  color: white;
+
+  &:active {
+    background-color: #45a049;
   }
 }
 
