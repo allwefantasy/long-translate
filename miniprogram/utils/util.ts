@@ -17,3 +17,17 @@ const formatNumber = (n: number) => {
   const s = n.toString()
   return s[1] ? s : '0' + s
 }
+
+export function promisify<T>(api: (...args: any[]) => void): (...args: any[]) => Promise<T> {
+  return (...args: any[]): Promise<T> => {
+    return new Promise((resolve, reject) => {
+      api(...args, (res: T | { errMsg: string }) => {
+        if ('errMsg' in res && res.errMsg.indexOf('fail') !== -1) {
+          reject(new Error(res.errMsg));
+        } else {
+          resolve(res as T);
+        }
+      });
+    });
+  };
+}
