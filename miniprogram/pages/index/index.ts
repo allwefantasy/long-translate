@@ -37,31 +37,7 @@ Component({
           this.filePath = file.path
         }
       })
-    },
-    translateFile() {
-      if (!this.filePath) {
-        wx.showToast({
-          title: '请先选择文件',
-          icon: 'none'
-        })
-        return
-      }
-      
-      const targetLanguage = this.data.languages[this.data.languageIndex].code
-      
-      wx.showLoading({
-        title: '翻译中...',
-      })
-      
-      // 这里应该调用你的翻译API
-      // 以下是模拟API调用的示例，现在包含目标语言
-      setTimeout(() => {
-        wx.hideLoading()
-        this.setData({
-          translationResult: `这是翻译成${this.data.languages[this.data.languageIndex].name}的内容。This is the content translated to ${targetLanguage}.`
-        })
-      }, 2000)
-    },
+    },    
     downloadTranslation() {
       if (!this.data.translationResult) {
         wx.showToast({
@@ -170,7 +146,7 @@ Component({
         return
       }
       
-      const targetLanguage = this.data.languages[this.data.languageIndex].code
+      const targetLanguage = this.data.languages[this.data.languageIndex].name
       
       wx.showLoading({
         title: '翻译中...',
@@ -247,7 +223,7 @@ Component({
       })
     },
 
-    pollTranslationResult(md5Hash: string, maxRetries = 60, delay = 5000) {
+    pollTranslationResult(md5Hash: string, maxRetries = 60, delay = 15000) {
       let retries = 0
       const poll = () => {
         if (retries >= maxRetries) {
@@ -275,17 +251,14 @@ Component({
               this.setData({
                 translationResult: response.data.translation
               })
-            } else if (response.statusCode === 404) {
+            } else {
               retries++
               setTimeout(poll, delay)
-            } else {
-              wx.hideLoading()
-              this.handleTranslationError()
-            }
+            } 
           },
           fail: (err) => {
-            wx.hideLoading()
-            this.handleTranslationError(err)
+            retries++
+            setTimeout(poll, delay)
           }
         })
       }
