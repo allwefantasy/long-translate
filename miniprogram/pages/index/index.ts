@@ -211,13 +211,13 @@ Component({
         },
         success: (response: any) => {
           if (response.statusCode === 200) {
-            const md5Hash = response.data.translation
+            const md5Hash = response.data.translation          
             this.pollTranslationResult(md5Hash)
-          } else {
+          } else {            
             this.handleTranslationError()
           }
         },
-        fail: (err) => {
+        fail: (err) => {          
           this.handleTranslationError(err)
         }
       })
