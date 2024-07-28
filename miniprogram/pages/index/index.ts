@@ -204,7 +204,7 @@ Component({
         method: 'POST',
         header: {
           'content-type': 'application/json',
-          'x-user-token': 'your-user-token' 
+          'x-user-token': 'long-translate' 
         },
         data: {
           text: data,
