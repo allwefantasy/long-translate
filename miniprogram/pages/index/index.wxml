@@ -32,6 +32,10 @@
       </button>
     </view>
   </view>
+  
+  <view class="version-info">
+    <text>版本 {{version}}</text>
+  </view>
 </scroll-view>
 
 <canvas canvas-id="translationCanvas" style="width: 300px; height: 450px; position: fixed; left: -1000px; top: -1000px;"></canvas>

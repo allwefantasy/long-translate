@@ -17,6 +17,7 @@ Component({
       { code: 'it', name: '意大利语' },
     ],
     languageIndex: 0,
+    version: '1.0.2', // 添加版本号
   },
   methods: {
     onLanguageChange(e: any) {
