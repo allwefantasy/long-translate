@@ -233,6 +233,7 @@ Component({
             title: '翻译超时',
             icon: 'none'
           })
+          console.error(`翻译失败：超过最大重试次数 ${maxRetries}`)
           return
         }
 
@@ -241,7 +242,7 @@ Component({
           method: 'POST',
           header: {
             'content-type': 'application/json',
-            'x-user-token': 'your-user-token'
+            'x-user-token': 'long-translate'
           },
           data: {
             md5: md5Hash
@@ -252,12 +253,19 @@ Component({
               this.setData({
                 translationResult: response.data.translation
               })
-            } else {
+              console.log('翻译成功完成')
+            } else if (response.statusCode === 404) {
+              console.log(`翻译进行中... 重试次数: ${retries + 1}/${maxRetries}`)
               retries++
               setTimeout(poll, delay)
-            } 
+            } else {
+              console.error(`翻译请求失败。状态码: ${response.statusCode}, 错误信息: ${JSON.stringify(response.data)}`)
+              retries++
+              setTimeout(poll, delay)
+            }
           },
           fail: (err) => {
+            console.error(`翻译请求失败。错误信息: ${JSON.stringify(err)}`)
             retries++
             setTimeout(poll, delay)
           }
