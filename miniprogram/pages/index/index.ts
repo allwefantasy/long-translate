@@ -218,8 +218,8 @@ Component({
             this.handleTranslationError()
           }
         },
-        fail: (err) => {          
-          this.handleTranslationError(err)
+        fail: (response) => {          
+          this.handleTranslationError(response)
         }
       })
     },
@@ -276,11 +276,13 @@ Component({
       })
     },
 
-    handleTranslationError(err?: any) {
+    handleTranslationError(response?: any) {
       wx.hideLoading()
-      if (err) {
-        console.error('翻译请求失败', err)
-      }
+      console.error('翻译请求失败', {
+        statusCode: response?.statusCode,
+        errMsg: response?.errMsg,
+        data: response?.data
+      })
       wx.showToast({
         title: '翻译失败',
         icon: 'none'
