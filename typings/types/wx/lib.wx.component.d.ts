@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2021 Tencent, Inc. All rights reserved.
+Copyright (c) 2024 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -152,8 +152,17 @@ declare namespace WechatMiniprogram.Component {
         ? ValueType<T>
         : FullPropertyToData<Exclude<T, ShortProperty>>
     type FullPropertyToData<T extends AllFullProperty> = ValueType<T['type']>
+    // type FullPropertyToData<T extends AllFullProperty> = unknown extends T['value'] ? ValueType<T['type']> : T['value']
     type PropertyOptionToData<P extends PropertyOption> = {
         [name in keyof P]: PropertyToData<P[name]>
+    }
+
+    interface Router {
+        switchTab: Wx['switchTab']
+        reLaunch: Wx['reLaunch']
+        redirectTo: Wx['redirectTo']
+        navigateTo: Wx['navigateTo']
+        navigateBack: Wx['navigateBack']
     }
 
     interface InstanceProperties {
@@ -163,6 +172,14 @@ declare namespace WechatMiniprogram.Component {
         id: string
         /** 节点dataset */
         dataset: Record<string, string>
+        /** 上一次退出前 onSaveExitState 保存的数据 */
+        exitState: any
+        /** 相对于当前自定义组件的 Router 对象 */
+        router: Router
+        /** 相对于当前自定义组件所在页面的 Router 对象 */
+        pageRouter: Router
+        /** 渲染当前组件的渲染后端 */
+        renderer: 'webview' | 'skyline'
     }
 
     interface InstanceMethods<D extends DataOption> {
@@ -202,6 +219,8 @@ declare namespace WechatMiniprogram.Component {
         createIntersectionObserver(
             options: CreateIntersectionObserverOption
         ): IntersectionObserver
+        /** 创建一个 MediaQueryObserver 对象 */
+        createMediaQueryObserver(): MediaQueryObserver
         /** 使用选择器选择组件实例节点，返回匹配到的第一个组件实例对象（会被 `wx://component-export` 影响） */
         selectComponent(selector: string): TrivialInstance
         /** 使用选择器选择组件实例节点，返回匹配到的全部组件实例对象组成的数组 */
@@ -270,7 +289,56 @@ declare namespace WechatMiniprogram.Component {
             options?: ClearAnimationOptions,
             callback?: () => void
         ): void
+        /**
+         * 当从另一页面跳转到该页面时，获得与来源页面实例通信当事件通道，详见 [wx.navigateTo]((wx.navigateTo))
+         *
+         * 最低基础库版本：[`2.7.3`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
         getOpenerEventChannel(): EventChannel
+        /**
+         * 绑定由 worklet 驱动的样式到相应的节点，详见 [worklet 动画](https://developers.weixin.qq.com/miniprogram/dev/framework/runtime/skyline/worklet.html)
+         *
+         * 最低基础库版本：[`2.29.0`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
+        applyAnimatedStyle(
+            selector: string,
+            updater: () => Record<string, string>,
+            userConfig?: { immediate: boolean, flush: 'sync' | 'async' },
+            callback?: (res: { styleId: number }) => void
+        ): void
+        /**
+         * 清除节点上 worklet 驱动样式的绑定关系
+         *
+         * 最低基础库版本：[`2.30.1`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
+        clearAnimatedStyle(
+            selector: string,
+            styleIds: number[],
+            callback?: () => void
+        ): void
+        /**
+         * 获取更新性能统计信息，详见 [获取更新性能统计信息]((custom-component/update-perf-stat))
+         *
+         *
+         * 最低基础库版本：[`2.12.0`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
+        setUpdatePerformanceListener<WithDataPath extends boolean = false>(
+            options: SetUpdatePerformanceListenerOption<WithDataPath>,
+            callback?: UpdatePerformanceListener<WithDataPath>
+        ): void
+
+        /**
+         * 在运行时获取页面或组件所在页面 `touch` 相关事件的 passive 配置，详见 [enablePassiveEvent]((configuration/app#enablePassiveEvent))
+         *
+         * 最低基础库版本：[`2.25.1`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
+        getPassiveEvent(callback: (config: PassiveConfig) => void): void
+        /**
+         * 在运行时切换页面或组件所在页面 `touch` 相关事件的 passive 配置，详见 [enablePassiveEvent]((configuration/app#enablePassiveEvent))
+         *
+         * 最低基础库版本：[`2.25.1`](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)
+         */
+        setPassiveEvent(config: PassiveConfig): void
     }
 
     interface ComponentOptions {
@@ -348,6 +416,11 @@ declare namespace WechatMiniprogram.Component {
          * 所在页面尺寸变化时执行
          */
         resize(size: Page.IResizeOption): void
+        /** 页面生命周期回调—监听页面路由动画完成
+         *
+         * 所在页面路由动画完成时执行
+         */
+        routeDone(): void
     }
 
     type DefinitionFilter = <T extends TrivialOption>(
@@ -623,6 +696,41 @@ declare namespace WechatMiniprogram.Component {
         /** 起始和结束的滚动范围映射的时间长度，该时间可用于与关键帧动画里的时间 (duration) 相匹配，单位 ms */
         timeRange: number
     }
+
+    interface SetUpdatePerformanceListenerOption<WithDataPath> {
+        /** 是否返回变更的 data 字段信息 */
+        withDataPaths?: WithDataPath
+    }
+    interface UpdatePerformanceListener<WithDataPath> {
+        (res: UpdatePerformance<WithDataPath>): void
+    }
+    interface UpdatePerformance<WithDataPath> {
+        /** 此次更新过程的 ID */
+        updateProcessId: number
+        /** 对于子更新，返回它所属的更新过程 ID */
+        parentUpdateProcessId?: number
+        /** 是否是被合并更新，如果是，则 updateProcessId 表示被合并到的更新过程 ID */
+        isMergedUpdate: boolean
+        /** 此次更新的 data 字段信息，只有 withDataPaths 设为 true 时才会返回 */
+        dataPaths: WithDataPath extends true ? string[] : undefined
+        /** 此次更新进入等待队列时的时间戳 */
+        pendingStartTimestamp: number
+        /** 更新运算开始时的时间戳 */
+        updateStartTimestamp: number
+        /** 更新运算结束时的时间戳 */
+        updateEndTimestamp: number
+    }
+
+    type PassiveConfig =
+        | {
+              /** 是否设置 touchmove 事件为 passive，默认为 `false` */
+              touchmove?: boolean
+              /** 是否设置 touchstart 事件为 passive，默认为 `false` */
+              touchstart?: boolean
+              /** 是否设置 wheel 事件为 passive，默认为 `false` */
+              wheel?: boolean
+          }
+        | boolean
 }
 /** Component构造器可用于定义组件，调用Component构造器时可以指定组件的属性、数据、方法等。
  *

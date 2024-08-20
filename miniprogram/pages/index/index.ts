@@ -200,7 +200,7 @@ Component({
 
     callTranslateAPI(data: string, targetLanguage: string) {
       wx.request({
-        url: 'https://route.api.mlsql.tech/v1/llm/translate',
+        url: 'https://long-translate.mlsql.tech:8998/v1/llm/translate',
         method: 'POST',
         header: {
           'content-type': 'application/json',
@@ -215,11 +215,11 @@ Component({
             const md5Hash = response.data.translation          
             this.pollTranslationResult(md5Hash)
           } else {            
-            this.handleTranslationError()
+            this.handleTranslationError(response, 'error')
           }
         },
-        fail: (response) => {          
-          this.handleTranslationError(response)
+        fail: (error:any) => {          
+          this.handleTranslationError(error, 'fail')
         }
       })
     },
@@ -238,7 +238,7 @@ Component({
         }
 
         wx.request({
-          url: 'https://route.api.mlsql.tech/v1/llm/translate/result',
+          url: 'https://long-translate.mlsql.tech:8998/v1/llm/translate/result',
           method: 'POST',
           header: {
             'content-type': 'application/json',
@@ -259,13 +259,13 @@ Component({
               retries++
               setTimeout(poll, delay)
             } else {
-              console.error(`翻译请求失败。状态码: ${response.statusCode}, 错误信息: ${JSON.stringify(response.data)}`)
+              console.error(`拉取翻译结果请求失败。状态码: ${response.statusCode}, 错误信息: ${JSON.stringify(response.data)}`)
               retries++
               setTimeout(poll, delay)
             }
           },
           fail: (err) => {
-            console.error(`翻译请求失败。错误信息: ${JSON.stringify(err)}`)
+            console.error(`拉取翻译结果请求失败。错误信息: ${JSON.stringify(err)}`)
             retries++
             setTimeout(poll, delay)
           }
@@ -284,13 +284,17 @@ Component({
       })
     },
 
-    handleTranslationError(response?: any) {
+    handleTranslationError(response: any, type: 'error' | 'fail') {
       wx.hideLoading()
-      console.error('翻译请求失败', {
-        statusCode: response?.statusCode,
-        errMsg: response?.errMsg,
-        data: response?.data
-      })
+      if (type === 'error') {
+        console.error('翻译请求失败', {
+          statusCode: response.statusCode,
+          errMsg: response.errMsg,
+          data: response.data
+        })
+      } else {
+        console.error('翻译请求失败', response)
+      }
       wx.showToast({
         title: '翻译失败',
         icon: 'none'

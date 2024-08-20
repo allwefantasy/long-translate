@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2021 Tencent, Inc. All rights reserved.
+Copyright (c) 2024 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -32,7 +32,11 @@ declare namespace WechatMiniprogram.Page {
     type Options<
         TData extends DataOption,
         TCustom extends CustomOption
-    > = (TCustom & Partial<Data<TData>> & Partial<ILifetime>) &
+    > = (TCustom &
+        Partial<Data<TData>> &
+        Partial<ILifetime> & {
+            options?: Component.ComponentOptions
+        }) &
         ThisType<Instance<TData, TCustom>>
     type TrivialInstance = Instance<IAnyObject, IAnyObject>
     interface Constructor {
@@ -72,6 +76,11 @@ declare namespace WechatMiniprogram.Page {
          * 页面卸载时触发。如`redirectTo`或`navigateBack`到其他页面时。
          */
         onUnload(): void | Promise<void>
+        /** 生命周期回调—监听路由动画完成
+         *
+         * 路由动画完成时触发。如 wx.navigateTo 页面完全推入后 或 wx.navigateBack 页面完全恢复时。
+         */
+        onRouteDone(): void | Promise<void>
         /** 监听用户下拉动作
          *
          * 监听用户下拉刷新事件。
@@ -98,7 +107,12 @@ declare namespace WechatMiniprogram.Page {
         onShareAppMessage(
             /** 分享发起来源参数 */
             options: IShareAppMessageOption
-        ): ICustomShareContent | void
+        ):
+            | ICustomShareContent
+            | IAsyncCustomShareContent
+            | Promise<ICustomShareContent>
+            | void
+            | Promise<void>
         /**
          * 监听右上角菜单“分享到朋友圈”按钮的行为，并自定义分享内容
          *
@@ -134,6 +148,9 @@ declare namespace WechatMiniprogram.Page {
          * 基础库 2.10.3，安卓 7.0.15 版本起支持，iOS 暂不支持
          */
         onAddToFavorites(options: IAddToFavoritesOption): IAddToFavoritesContent
+
+        /** 每当小程序可能被销毁之前会被调用，可以进行退出状态的保存。最低基础库： `2.7.4` */
+        onSaveExitState(): ISaveExitState
     }
     interface InstanceProperties {
         /** 页面的文件路径 */
@@ -144,6 +161,18 @@ declare namespace WechatMiniprogram.Page {
 
         /** 打开当前页面路径中的参数 */
         options: Record<string, string | undefined>
+
+        /** 上一次退出前 onSaveExitState 保存的数据 */
+        exitState: any
+
+        /** 相对于当前页面的 Router 对象 */
+        router: Component.Router
+
+        /** 相对于当前页面的 Router 对象 */
+        pageRouter: Component.Router
+
+        /** 渲染当前页面的渲染后端 */
+        renderer: 'webview' | 'skyline'
     }
 
     type DataOption = Record<string, any>
@@ -172,6 +201,10 @@ declare namespace WechatMiniprogram.Page {
         imageUrl?: string
     }
 
+    interface IAsyncCustomShareContent extends ICustomShareContent {
+        promise: Promise<ICustomShareContent>
+    }
+
     interface ICustomTimelineContent {
         /** 自定义标题，即朋友圈列表页上显示的标题。默认值：当前小程序名称 */
         title?: string
@@ -195,7 +228,7 @@ declare namespace WechatMiniprogram.Page {
          *
          * 最低基础库： `1.2.4`
          */
-        from: 'button' | 'menu' | string
+        from: 'button' | 'menu'
         /** 如果 `from` 值是 `button`，则 `target` 是触发这次转发事件的 `button`，否则为 `undefined`
          *
          * 最低基础库： `1.2.4` */
@@ -237,6 +270,13 @@ declare namespace WechatMiniprogram.Page {
         imageUrl?: string
         /** 自定义query字段，默认值：当前页面的query */
         query?: string
+    }
+
+    interface ISaveExitState {
+        /** 需要保存的数据（只能是 JSON 兼容的数据） */
+        data: any
+        /** 超时时刻，在这个时刻后，保存的数据保证一定被丢弃，默认为 (当前时刻 + 1 天) */
+        expireTimeStamp?: number
     }
 
     interface GetCurrentPages {

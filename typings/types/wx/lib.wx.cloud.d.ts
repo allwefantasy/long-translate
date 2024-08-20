@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2021 Tencent, Inc. All rights reserved.
+Copyright (c) 2024 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -19,6 +19,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***************************************************************************** */
+
+/**
+ * Common interfaces and types
+ */
 
 interface IAPIError {
     errMsg: string
@@ -121,6 +125,18 @@ interface WxCloud {
 
     CloudID: ICloud.ICloudIDConstructor
     CDN: ICloud.ICDNConstructor
+
+    callContainer(param: OQ<ICloud.CallContainerParam>): void
+    callContainer(
+        param: RQ<ICloud.CallContainerParam>
+    ): Promise<ICloud.CallContainerResult>
+
+    connectContainer(param: OQ<ICloud.ConnectContainerParam>): void
+    connectContainer(
+        param: RQ<ICloud.ConnectContainerParam>
+    ): Promise<ICloud.ConnectContainerResult>
+
+    services: ICloud.CloudServices
 }
 
 declare namespace ICloud {
@@ -139,6 +155,82 @@ declare namespace ICloud {
         name: string
         data?: CallFunctionData
         slow?: boolean
+    }
+    // === end ===
+
+    // === API: container ===
+    type CallContainerData = AnyObject
+
+    interface CallContainerResult extends IAPISuccessParam {
+        data: any
+        statusCode: number
+        header: Record<string, any>
+        callID: string
+    }
+
+    interface CallContainerParam extends ICloudAPIParam<CallContainerResult> {
+        path: string
+        service?: string
+        method?: string
+        header?: Record<string, any>
+        data?: any // string, object, ArrayBuffer
+        dataType?: string
+        responseType?: string
+        timeout?: number
+        verbose?: boolean
+        followRedirect?: boolean
+    }
+
+    interface ConnectContainerResult extends IAPISuccessParam {
+        socketTask: WechatMiniprogram.SocketTask
+    }
+
+    interface ConnectSocketOptions extends IAPIParam<void> {
+        header?: Record<string, string>
+        protocols?: string[]
+        tcpNoDelay?: boolean
+        perMessageDeflate?: boolean
+        timeout?: number
+    }
+
+    type ConnectContainerParam = Omit<
+        ConnectSocketOptions,
+        'success' | 'fail' | 'complete'
+    > &
+        ICloudAPIParam<ConnectContainerResult> & {
+            service: string
+            path?: string
+        }
+    // === end ===
+
+    // === API: services ===
+    type AsyncSession<T> = T | PromiseLike<T>
+    interface GatewayCallOptions {
+        path: string
+        data: any
+        shouldSerialize?: boolean
+        apiVersion?: number
+    }
+    interface GatewayInstance {
+        call: (
+            param: CallContainerParam & GatewayCallOptions
+        ) => Promise<CallContainerResult>
+        refresh: (session: AsyncSession<string>) => Promise<void>
+    }
+    interface GatewayConstructOptions {
+        id: string
+        appid?: string
+        domain?: string
+        keepalive?: boolean
+        prefetch?: boolean
+        prefetchOptions?: {
+            concurrent?: number
+            enableQuic?: boolean
+            enableHttp2?: boolean
+        }
+    }
+    interface CloudServices {
+        Gateway: (opts: GatewayConstructOptions) => GatewayInstance
     }
     // === end ===
 
