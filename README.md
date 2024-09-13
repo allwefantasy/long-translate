@@ -1,7 +1,8 @@
 
 # 📚 长文翻译小程序使用文档
 
-全球首款已经上线的纯AI打造的（auto-coder.chat）一个款微信小程序应用： 长文翻译。
+全球首款已经上线的纯AI打造的（auto-coder.chat）款微信小程序应用： 长文翻译。
+
 这个小程序可以帮助您轻松翻译长篇文档，支持多种文件格式和语言。
 
 ---
@@ -129,7 +130,7 @@ A: 点击"下载结果"按钮，可以选择保存到相册或保存为文件。
 
 3. 推送分支并创建 Pull Request
 
-我和 auto-coder.chat 交互的历史记录在 william_actions 里
+我和 auto-coder.chat 交互的历史记录在 william_actions 目录里。
 
 ### 🧪 测试
 
