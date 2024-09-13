@@ -1,7 +1,7 @@
 
 # 📚 长文翻译小程序使用文档
 
-全球首款已经上线的纯AI打造的（auto-coder.chat）款微信小程序应用： 长文翻译。
+全球首款已经上线的纯AI打造的[auto-coder.chat](https://uelng8wukz.feishu.cn/wiki/NhPNwSRcWimKFIkQINIckloBncI?fromScene=spaceOverview&open_tab_from=wiki_home)款微信小程序应用： 长文翻译。
 
 这个小程序可以帮助您轻松翻译长篇文档，支持多种文件格式和语言。
 
@@ -129,10 +129,15 @@ A: 点击"下载结果"按钮，可以选择保存到相册或保存为文件。
   ```
   auto-coder.chat
   ```
+  注意，当让你输入项目类型(project_type)时，输入：.js,.ts,.scss,.wxml,.json,.py
 
 3. 推送分支并创建 Pull Request
 
 我和 auto-coder.chat 交互的历史记录在 william_actions 目录里。
+
+### 如何使用 OpenAI o1-preview/o1-mini 迭代
+
+因为目前没有提供API，可以用 auto-coder.chat 的[human as model](https://uelng8wukz.feishu.cn/wiki/IkofwKqAeiPu3Hkz6SMcxriKn6f?fromScene=spaceOverview) 模式，使用网页版大模型来开发。
 
 ### 🧪 测试
 
