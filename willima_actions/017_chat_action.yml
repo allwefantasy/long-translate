@@ -1,0 +1,33 @@
+auto_merge: editblock
+editblock_similarity: 0.8
+human_as_model: true
+include_file:
+- ./base/base.yml
+query: invalid app.json permission["scope.writePhotosAlbum"]、app.json permission["scope.userStorage"]
+silence: true
+skip_build_index: true
+skip_confirm: true
+urls:
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/components/navigation-bar/navigation-bar.ts
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/utils/util.ts
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/app.scss
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/app.ts
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/components/navigation-bar/navigation-bar.json
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/logs/logs.wxml
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.json
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.ts
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/app.json
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/sitemap.json
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.wxml
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/components/navigation-bar/navigation-bar.wxml
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/logs/logs.ts
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/logs/logs.json
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/components/navigation-bar/navigation-bar.scss
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/logs/logs.scss
+- /Users/allwefantasy/WeChatProjects/long-translate/miniprogram/pages/index/index.scss
+- /Users/allwefantasy/WeChatProjects/long-translate/tsconfig.json
+- /Users/allwefantasy/WeChatProjects/long-translate/project.config.json
+- /Users/allwefantasy/WeChatProjects/long-translate/package.json
+- /Users/allwefantasy/WeChatProjects/long-translate/project.private.config.json
+- /Users/allwefantasy/projects/web-typing-auto-complete/src/app.py
+vl_model: gpt_4o_mini_chat
