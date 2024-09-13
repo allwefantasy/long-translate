@@ -1,7 +1,7 @@
 
 # 📚 长文翻译小程序使用文档
 
-全球首款已经上线的纯AI打造的[auto-coder.chat](https://uelng8wukz.feishu.cn/wiki/NhPNwSRcWimKFIkQINIckloBncI?fromScene=spaceOverview&open_tab_from=wiki_home)款微信小程序应用： 长文翻译。
+全球首款已经上线的基于[auto-coder.chat](https://uelng8wukz.feishu.cn/wiki/NhPNwSRcWimKFIkQINIckloBncI?fromScene=spaceOverview&open_tab_from=wiki_home)纯AI打造的微信小程序应用： 长文翻译。
 
 这个小程序可以帮助您轻松翻译长篇文档，支持多种文件格式和语言。
 
