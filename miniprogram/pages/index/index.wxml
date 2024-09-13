@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#2196F3"></navigation-bar>
+<navigation-bar title="文件翻译" back="{{false}}" color="#FFF" background="#4CAF50"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <view class="card file-and-language">

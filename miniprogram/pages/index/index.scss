@@ -91,7 +91,7 @@ page {
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background-color: #2196F3;  // 保持与主按钮一致
+  background-color: #2196F3;
   color: white;
   font-size: 14px;
   font-weight: 600;
@@ -101,7 +101,7 @@ page {
   transition: all 0.3s ease;
 
   &:active {
-    background-color: #1E88E5;  // 与主按钮的active状态保持一致
+    background-color: #1e88e5;
     transform: scale(0.98);
   }
 }
@@ -111,7 +111,7 @@ page {
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background-color: #2196F3;  // 将绿色改为蓝色
+  background-color: #4CAF50;
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -122,7 +122,7 @@ page {
   transition: all 0.3s ease;
 
   &:active {
-    background-color: #1E88E5;  // 深蓝色，用于按钮按下效果
+    background-color: #45a049;
     transform: scale(0.98);
   }
 }
