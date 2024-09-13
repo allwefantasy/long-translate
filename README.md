@@ -80,5 +80,82 @@ A: 目前不支持图片翻译，仅支持文本形式的文件。
 A: 点击"下载结果"按钮，可以选择保存到相册或保存为文件。
 
 ---
-
 如果您在使用过程中遇到任何问题或有任何建议，欢迎随时反馈。祝您使用愉快！ 😊
+
+---
+
+## 👨‍💻 开发者指南
+
+本节为有兴趣参与项目开发的开发者提供指导。
+
+### 🛠 开发环境设置
+
+1. 克隆项目仓库:
+   ```
+   git clone https://github.com/your-repo/long-translate.git
+   cd long-translate
+   ```
+
+2. 安装依赖:
+   ```
+   npm install
+   ```
+
+3. 设置微信开发者工具:
+   - 下载并安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
+   - 导入项目到开发者工具
+
+### 🏗 项目结构
+
+- `miniprogram/`: 小程序前端代码
+  - `pages/`: 页面文件
+  - `components/`: 自定义组件
+  - `utils/`: 工具函数
+- `backend/`: 后端服务代码
+  - `src/`: 源代码
+    - `app.py`: 主应用文件
+
+### 🔧 开发流程
+
+1. 创建新分支进行开发:
+   ```
+   git checkout -b feature/your-feature-name
+   ```
+
+2. 进行代码修改和测试
+
+3. 提交变更:
+   ```
+   git add .
+   git commit -m "Add your commit message here"
+   ```
+
+4. 推送分支并创建 Pull Request
+
+### 🧪 测试
+
+- 使用微信开发者工具进行本地测试
+- 运行后端服务进行 API 测试:
+  ```
+  cd backend
+  python src/app.py
+  ```
+
+### 📚 文档
+
+- 请确保为新功能或变更更新相关文档
+- 遵循现有的代码风格和注释规范
+
+### 🤝 贡献指南
+
+我们欢迎所有形式的贡献，包括但不限于:
+
+- 新功能开发
+- Bug 修复
+- 文档改进
+- 性能优化
+
+在提交 Pull Request 之前，请确保您的代码符合项目的编码规范并通过了所有测试。
+
+感谢您对长文翻译小程序的贡献！
+
